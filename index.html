@@ -45,13 +45,13 @@
         #checkout_button:hover {
             background-color: #357abd;
         }
-        #product-section {
+        #class-section {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
             justify-content: space-between;
         }
-        .product-box {
+        .class-box {
             width: 30%;
             background-color: white;
             border-radius: 10px;
@@ -59,28 +59,28 @@
             overflow: hidden;
             transition: transform 0.3s;
         }
-        .product-box:hover {
+        .class-box:hover {
             transform: translateY(-5px);
         }
-        .product-box figure {
+        .class-box figure {
             margin: 0;
             width: 100%;
         }
-        .product-box img {
+        .class-box img {
             width: 100%;
             height: 180px;
             object-fit: cover;
             border-bottom: 1px solid #ddd;
         }
-        .product-box section {
+        .class-box section {
             padding: 15px;
         }
-        .product-box h2 {
+        .class-box h2 {
             font-size: 18px;
             color: #333;
             margin-bottom: 10px;
         }
-        .product-box p {
+        .class-box p {
             font-size: 14px;
             color: #666;
             margin-bottom: 10px;
@@ -110,6 +110,12 @@
         button.enroll-button:hover {
             background-color: #357abd;
         }
+
+        button.enroll-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
         #checkout-section {
             max-width: 600px;
             background-color: #f8f8f8;
@@ -166,6 +172,29 @@
             color: #666;
             margin-bottom: 8px;
         }
+        #cart-summary {
+            margin-bottom: 20px;
+        }
+        #cart-summary img {
+            height: 50px;
+            width: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        #cart-summary-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        #total-amount {
+            font-weight: bold;
+            color: #4a90e2;
+            font-size: 18px;
+            text-align: right;
+            margin-top: 10px;
+        }
         #submitButton {
             width: 100%;
             padding: 12px;
@@ -183,7 +212,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-    <script src="javascripts/products.js"></script>
+    <script src="javascripts/classes.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 <body>
@@ -196,60 +225,58 @@
             </button>
         </header>
         <main>
-            <div id="product-section" v-if="showProduct">
-                <div v-for="product in sortedProducts" class="product-box">
+            <div id="class-section" v-if="showClass">
+                <div v-for="classItem in sortedClasses" class="class-box">
                     <figure>
-                        <img v-bind:src="product.image" alt="Class Image">
+                        <img v-bind:src="classItem.image" alt="Class Image">
                     </figure>
                     <section>
-                        <h2 v-text="product.title"></h2>
-                        <p v-html="product.description"></p>
-                        <p class="price">Price: ${{ product.price / 100 }}</p>
-                        <p v-if="availableStock(product) > 0">Seats available: {{ availableStock(product) }}</p>
+                        <h2 v-text="classItem.title"></h2>
+                        <p v-html="classItem.description"></p>
+                        <p class="price">Price: ${{ classItem.price }}</p>
+                        <p v-if="availableStock(classItem) > 0">Seats available: {{ availableStock(classItem) }}</p>
                         <p v-else style="color: red;">Class Full</p>
                         <div class="rating">
-                            <span v-for="n in product.rating">★</span>
-                            <span v-for="n in 5 - product.rating">☆</span>
+                            <span v-for="n in classItem.rating">★</span>
+                            <span v-for="n in 5 - classItem.rating">☆</span>
                         </div>
-                        <button v-on:click="addToCart(product)" v-if="canAddToCart(product)" class="enroll-button">
-                            Enroll
-                        </button>
-                        <button disabled v-else class="enroll-button">
-                            Full
-                        </button>
+                        <button 
+    v-on:click="addToCart(classItem)" 
+    :disabled="availableStock(classItem) === 0" 
+    class="enroll-button">
+    {{ availableStock(classItem) === 0 ? "Full" : "Enroll" }}
+</button>
                     </section>
                 </div>
             </div>
             <div v-else id="checkout-section">
                 <h2>Checkout</h2>
+                <div id="cart-summary">
+                    <h3>Cart Summary</h3>
+                    <div v-for="item in cartItems" id="cart-summary-item">
+                        <img v-bind:src="item.image" alt="Class Image">
+                        <span>{{ item.title }}</span>
+                        <span>${{ item.price }}</span>
+                    </div>
+                    <p id="total-amount">Total: ${{ totalPrice }}</p>
+                </div>
                 <p><label>First Name:</label><input v-model.trim="order.firstName" type="text" placeholder="Enter first name"></p>
                 <p><label>Last Name:</label><input v-model.trim="order.lastName" type="text" placeholder="Enter last name"></p>
                 <p><label>Address:</label><input v-model.trim="order.address" type="text" placeholder="Enter address"></p>
-                <p><label>City:</label><input v-model.trim="order.city" type="text" placeholder="Enter city"></p>
-                <p><label>State:</label>
-                    <select v-model="order.state">
-                        <option disabled value="">Select State</option>
-                        <option v-for="(state, key) in states" v-bind:value="key">{{ state }}</option>
+                <p><label>Emirate:</label>
+                    <select v-model="order.emirate">
+                        <option disabled value="">Select Emirate</option>
+                        <option v-for="(emirate, key) in emirates" v-bind:value="key">{{ emirate }}</option>
                     </select>
                 </p>
                 <p><label>Zip Code:</label><input v-model.number="order.zip" type="number" placeholder="Enter ZIP code"></p>
-                <p><input type="checkbox" v-model="order.gift">
-                    <label>Ship as Gift</label>
-                </p>
-                <p><input type="radio" value="Home" v-model="order.method"> Home
-                <input type="radio" value="Business" v-model="order.method"> Business</p>
-
-                <!-- Order Preview Section -->
                 <div id="orderInfoDiv">
                     <h2>Order Preview</h2>
-                    <p><strong>First Name:</strong> {{ order.firstName || "Not provided" }}</p>
-                    <p><strong>Last Name:</strong> {{ order.lastName || "Not provided" }}</p>
-                    <p><strong>Address:</strong> {{ order.address || "Not provided" }}</p>
-                    <p><strong>City:</strong> {{ order.city || "Not provided" }}</p>
-                    <p><strong>State:</strong> {{ states[order.state] || "Not provided" }}</p>
-                    <p><strong>Zip Code:</strong> {{ order.zip || "Not provided" }}</p>
-                    <p><strong>Gift:</strong> {{ order.gift ? "Yes" : "No" }}</p>
-                    <p><strong>Delivery Method:</strong> {{ order.method }}</p>
+                    <p><strong>First Name:</strong> {{ order.firstName }}</p>
+                    <p><strong>Last Name:</strong> {{ order.lastName }}</p>
+                    <p><strong>Address:</strong> {{ order.address }}</p>
+                    <p><strong>Emirate:</strong> {{ emirates[order.emirate] }}</p>
+                    <p><strong>Zip Code:</strong> {{ order.zip }}</p>
                     <button id="submitButton" v-on:click="submitForm">Place Order</button>
                 </div>
             </div>
@@ -260,55 +287,57 @@
             el: "#app",
             data: {
                 sitename: "PostClasses",
-                products: products,
+                classes: classes,
                 cart: [],
-                showProduct: true,
+                showClass: true,
                 order: {
                     firstName: "",
                     lastName: "",
                     address: "",
-                    city: "",
-                    state: "",
+                    emirate: "",
                     zip: "",
-                    gift: false,
-                    method: "Home"
                 },
-                states: {
-                    AL: "Alabama",
-                    AR: "Arizona",
-                    CA: "California",
-                    NV: "Nevada"
+                emirates: {
+                    DU: "Dubai",
+                    AD: "Abu Dhabi",
+                    SH: "Sharjah",
+                    AJ: "Ajman",
+                    UQ: "Umm Al Quwain",
+                    RK: "Ras Al Khaimah",
+                    FU: "Fujairah",
+                }
+            },
+            computed: {
+                cartItemCount() {
+                    return this.cart.length || "";
+                },
+                sortedClasses() {
+                    return this.classes.sort((a, b) => a.price - b.price);
+                },
+                cartItems() {
+                    return this.classes.filter(classItem => this.cart.includes(classItem.id));
+                },
+                totalPrice() {
+                    return this.cartItems.reduce((total, classItem) => total + classItem.price, 0);
                 }
             },
             methods: {
-                canAddToCart: function(product) {
-                    return this.availableStock(product) > this.cart.filter(id => id === product.id).length;
+                canAddToCart(classItem) {
+    return this.availableStock(classItem) > 0;
+},
+                addToCart(classItem) {
+                    this.cart.push(classItem.id);
                 },
-                addToCart: function(product) {
-                    this.cart.push(product.id);
+                showCheckout() {
+                    this.showClass = !this.showClass;
                 },
-                showCheckout: function() {
-                    this.showProduct = !this.showProduct;
-                },
-                submitForm: function() {
+                submitForm() {
                     alert('Order submitted!');
                 },
-                availableStock: function(product) {
-                   return product.availableStock - this.cart.filter(id => id === product.id).length;
-                },
-            },
-            computed: {
-                cartItemCount: function() {
-                    return this.cart.length || "";
-                },
-                sortedProducts() {
-                    let productsArray = this.products.slice(0);
-                    function compare(a, b) {
-                        if (a.price > b.price) return 1;
-                        if (a.price < b.price) return -1;
-                    }
-                    return productsArray.sort(compare);
-                },
+                availableStock(classItem) {
+    const inCart = this.cart.filter(id => id === classItem.id).length;
+    return classItem.availableSeats - inCart;
+}
             }
         });
     </script>
