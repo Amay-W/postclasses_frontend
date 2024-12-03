@@ -38,6 +38,14 @@ header {
 #checkout_button:hover {
     background-color: #357abd;
 }
+
+#checkout_button:disabled {
+    background-color: #ccc;
+    color: #888;
+    cursor: not-allowed;
+}
+
+
 #class-section {
     display: flex;
     flex-wrap: wrap;
