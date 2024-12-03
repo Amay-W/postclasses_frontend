@@ -30,9 +30,8 @@
             border-bottom: 2px solid #ccc;
             margin-bottom: 20px;
         }
-        #title {
-            font-size: 24px;
-            color: #333;
+        #logo {
+            height: 90px;
         }
         #checkout_button {
             background-color: #4a90e2;
@@ -53,7 +52,7 @@
             justify-content: space-between;
         }
         .product-box {
-            width: 30%; /* Ensures three items per row */
+            width: 30%;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -69,8 +68,8 @@
         }
         .product-box img {
             width: 100%;
-            height: 180px; /* Fixed height for uniform image display */
-            object-fit: cover; /* Ensures images fill the box without distortion */
+            height: 180px;
+            object-fit: cover;
             border-bottom: 1px solid #ddd;
         }
         .product-box section {
@@ -136,7 +135,7 @@
 <body>
     <div id="app">
         <header>
-            <h1 id="title" v-text="sitename"></h1>
+            <img id="logo" src="assets/POST2.png" alt="PostClasses Logo">
             <button id="checkout_button" v-on:click="showCheckout">
                 {{ cartItemCount }}
                 <i class="fas fa-cart-plus"></i> Checkout
@@ -168,24 +167,35 @@
                 </div>
             </div>
             <div v-else>
+                <h2>Checkout</h2>
+                <p><strong>First Name:</strong> <input v-model.trim="order.firstName"></p>
+                <p><strong>Last Name:</strong> <input v-model.trim="order.lastName"></p>
+                <p><strong>Address:</strong> <input v-model.trim="order.address"></p>
+                <p><strong>City:</strong> <input v-model.trim="order.city"></p>
+                <p><strong>State:</strong>
+                    <select v-model="order.state">
+                        <option disabled value="">Select State</option>
+                        <option v-for="(state, key) in states" v-bind:value="key">{{ state }}</option>
+                    </select>
+                </p>
+                <p><strong>Zip/Postal Code:</strong> <input v-model.number="order.zip" type="number"></p>
+                <p><input type="checkbox" v-model="order.gift">
+                    <label for="gift">Ship as Gift</label>
+                </p>
+                <p><input type="radio" value="Home" v-model="order.method"> Home
+                <input type="radio" value="Business" v-model="order.method"> Business</p>
+
+                <!-- Order Preview Section -->
                 <div id="orderInfoDiv">
-                    <h2>Checkout</h2>
-                    <p><strong>First Name:</strong> <input v-model.trim="order.firstName"></p>
-                    <p><strong>Last Name:</strong> <input v-model.trim="order.lastName"></p>
-                    <p><strong>Address:</strong> <input v-model.trim="order.address"></p>
-                    <p><strong>City:</strong> <input v-model.trim="order.city"></p>
-                    <p><strong>State:</strong>
-                        <select v-model="order.state">
-                            <option disabled value="">Select State</option>
-                            <option v-for="(state, key) in states" v-bind:value="key">{{ state }}</option>
-                        </select>
-                    </p>
-                    <p><strong>Zip/Postal Code:</strong> <input v-model.number="order.zip" type="number"></p>
-                    <p><input type="checkbox" v-model="order.gift">
-                        <label for="gift">Ship as Gift</label>
-                    </p>
-                    <p><input type="radio" value="Home" v-model="order.method"> Home
-                    <input type="radio" value="Business" v-model="order.method"> Business</p>
+                    <h2>Order Preview</h2>
+                    <p><strong>First Name:</strong> {{ order.firstName || "Not provided" }}</p>
+                    <p><strong>Last Name:</strong> {{ order.lastName || "Not provided" }}</p>
+                    <p><strong>Address:</strong> {{ order.address || "Not provided" }}</p>
+                    <p><strong>City:</strong> {{ order.city || "Not provided" }}</p>
+                    <p><strong>State:</strong> {{ states[order.state] || "Not provided" }}</p>
+                    <p><strong>Zip:</strong> {{ order.zip || "Not provided" }}</p>
+                    <p><strong>Gift:</strong> {{ order.gift ? "Yes" : "No" }}</p>
+                    <p><strong>Delivery Method:</strong> {{ order.method }}</p>
                     <button id="submitButton" v-on:click="submitForm">Place Order</button>
                 </div>
             </div>
