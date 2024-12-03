@@ -110,22 +110,76 @@
         button.enroll-button:hover {
             background-color: #357abd;
         }
+        #checkout-section {
+            max-width: 600px;
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+        }
+        #checkout-section h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        #checkout-section p {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            color: #555;
+            margin: 10px 0;
+        }
+        #checkout-section input[type="text"],
+        #checkout-section input[type="number"],
+        #checkout-section select {
+            width: 70%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        #checkout-section label {
+            font-size: 15px;
+            color: #555;
+        }
         #orderInfoDiv {
             background-color: #fafafa;
             border: 1px solid #ddd;
-            border-radius: 12px;
-            padding: 30px;
-            margin: 10px auto;
-            max-width: 500px;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
         }
         #orderInfoDiv h2 {
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-align: center;
         }
         #orderInfoDiv p {
             font-size: 14px;
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+        }
+        #submitButton {
+            width: 100%;
+            padding: 12px;
+            background-color: #4a90e2;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+        }
+        #submitButton:hover {
+            background-color: #357abd;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
@@ -166,21 +220,21 @@
                     </section>
                 </div>
             </div>
-            <div v-else>
+            <div v-else id="checkout-section">
                 <h2>Checkout</h2>
-                <p><strong>First Name:</strong> <input v-model.trim="order.firstName"></p>
-                <p><strong>Last Name:</strong> <input v-model.trim="order.lastName"></p>
-                <p><strong>Address:</strong> <input v-model.trim="order.address"></p>
-                <p><strong>City:</strong> <input v-model.trim="order.city"></p>
-                <p><strong>State:</strong>
+                <p><label>First Name:</label><input v-model.trim="order.firstName" type="text" placeholder="Enter first name"></p>
+                <p><label>Last Name:</label><input v-model.trim="order.lastName" type="text" placeholder="Enter last name"></p>
+                <p><label>Address:</label><input v-model.trim="order.address" type="text" placeholder="Enter address"></p>
+                <p><label>City:</label><input v-model.trim="order.city" type="text" placeholder="Enter city"></p>
+                <p><label>State:</label>
                     <select v-model="order.state">
                         <option disabled value="">Select State</option>
                         <option v-for="(state, key) in states" v-bind:value="key">{{ state }}</option>
                     </select>
                 </p>
-                <p><strong>Zip/Postal Code:</strong> <input v-model.number="order.zip" type="number"></p>
+                <p><label>Zip Code:</label><input v-model.number="order.zip" type="number" placeholder="Enter ZIP code"></p>
                 <p><input type="checkbox" v-model="order.gift">
-                    <label for="gift">Ship as Gift</label>
+                    <label>Ship as Gift</label>
                 </p>
                 <p><input type="radio" value="Home" v-model="order.method"> Home
                 <input type="radio" value="Business" v-model="order.method"> Business</p>
@@ -193,7 +247,7 @@
                     <p><strong>Address:</strong> {{ order.address || "Not provided" }}</p>
                     <p><strong>City:</strong> {{ order.city || "Not provided" }}</p>
                     <p><strong>State:</strong> {{ states[order.state] || "Not provided" }}</p>
-                    <p><strong>Zip:</strong> {{ order.zip || "Not provided" }}</p>
+                    <p><strong>Zip Code:</strong> {{ order.zip || "Not provided" }}</p>
                     <p><strong>Gift:</strong> {{ order.gift ? "Yes" : "No" }}</p>
                     <p><strong>Delivery Method:</strong> {{ order.method }}</p>
                     <button id="submitButton" v-on:click="submitForm">Place Order</button>
@@ -240,8 +294,8 @@
                     alert('Order submitted!');
                 },
                 availableStock: function(product) {
-                    return product.availableInventory - this.cart.filter(id => id === product.id).length;
-                }
+                   return product.availableStock - this.cart.filter(id => id === product.id).length;
+                },
             },
             computed: {
                 cartItemCount: function() {
