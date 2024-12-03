@@ -1,233 +1,206 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PostClasses</title>
-        <link rel="stylesheet" href="styles/style.css">
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-        <script src="javascripts/classes.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-    </head>
-    <body>
-        <div id="app">
-            <header>
-                <img id="logo" v-bind:src="imageLink('assets/POST2.png')" alt="PostClasses Logo">
-                <div id="sort-section">
-                    <label for="sort-dropdown">Sort by:</label>
-                    <select v-model="sortAttribute" id="sort-dropdown" class="sort-dropdown">
-                        <option value="title">Subject</option>
-                        <option value="location">Location</option>
-                        <option value="availableSeats">Availability</option>
-                        <option value="price">Price</option>
-                    </select>
-                    <button v-if="!isAscending" @click="toggleSortOrder" class="sort-button">
-                        <i class="fas fa-sort-amount-down"></i> Descending
-                    </button>
-                    <button v-else @click="toggleSortOrder" class="sort-button">
-                        <i class="fas fa-sort-amount-up"></i> Ascending
-                    </button>
-                </div>
-                <button 
-                    id="checkout_button" 
-                    v-on:click="showCheckout" 
-                    :disabled="cart.length === 0"
-                    class="checkout-button">
-                    {{ cartItemCount || "0" }}
-                    <i class="fas fa-cart-plus"></i> Checkout
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostClasses</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <img id="logo" v-bind:src="imageLink('assets/POST2.png')" alt="PostClasses Logo">
+            <div id="sort-section">
+                <label for="sort-dropdown">Sort by:</label>
+                <select v-model="sortAttribute" id="sort-dropdown" class="sort-dropdown">
+                    <option value="title">Subject</option>
+                    <option value="location">Location</option>
+                    <option value="availableSeats">Availability</option>
+                    <option value="price">Price</option>
+                </select>
+                <button @click="toggleSortOrder" class="sort-button">
+                    <i :class="isAscending ? 'fas fa-sort-amount-up' : 'fas fa-sort-amount-down'"></i>
+                    {{ isAscending ? 'Ascending' : 'Descending' }}
                 </button>
-            </header>
-            <main>
-                <div id="class-section" v-if="showClass">
-                    <div v-for="classItem in sortedClasses" class="class-box">
-                        <figure>
-                            <img v-bind:src="imageLink(classItem.image)" alt="Class Image">
-                        </figure>
-                        <section>
-                            <h2 v-text="classItem.title"></h2>
-                            <p v-html="classItem.description"></p>
-                            <p class="location">Location: {{ classItem.location }}</p>
-                            <p class="price">Price: ${{ classItem.price }}</p>
-                            <p v-if="availableStock(classItem) > 0">Seats available: {{ availableStock(classItem) }}</p>
-                            <p v-else style="color: red;">Class Full</p>
-                            <div class="rating">
-                                <span v-for="n in classItem.rating">★</span>
-                                <span v-for="n in 5 - classItem.rating">☆</span>
-                            </div>
-                            <button 
-                                v-on:click="addToCart(classItem)" 
-                                :disabled="availableStock(classItem) === 0" 
-                                class="enroll-button">
-                                {{ availableStock(classItem) === 0 ? "Full" : "Enroll" }}
-                            </button>
-                        </section>
-                    </div>
-                </div>
-                <div v-else id="checkout-section">
-                    <h2>Checkout</h2>
-                    <div id="cart-summary">
-                        <h3>Cart Summary</h3>
-                        <div v-for="item in cart" class="cart-item">
-                            <!-- <img v-bind:src="item.class.image" alt="Class Image" class="cart-image"> -->
-                            <img v-bind:src="imageLink(item.class.image)" alt="Class Image" class="cart-image"> 
-                            <div class="cart-details">
-                                <h4 class="cart-title">{{ item.class.title }}</h4>
-                                <p class="cart-location">Location: {{ item.class.location }}</p>
-                                <p class="cart-quantity">Quantity: {{ item.quantity }}</p>
-                            </div>
-                            <p class="cart-total">${{ item.class.price * item.quantity }}</p>
-                            <button class="remove-item-btn" v-on:click="removeFromCart(item.class)">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+            </div>
+            <button 
+                id="checkout_button" 
+                v-on:click="showCheckout" 
+                :disabled="cart.length === 0"
+                class="checkout-button">
+                {{ cartItemCount || "0" }}
+                <i class="fas fa-cart-plus"></i> Checkout
+            </button>
+        </header>
+        <main>
+            <div id="class-section" v-if="showClass">
+                <div v-for="classItem in sortedClasses" class="class-box">
+                    <figure>
+                        <img v-bind:src="imageLink(classItem.image)" alt="Class Image">
+                    </figure>
+                    <section>
+                        <h2 v-text="classItem.title"></h2>
+                        <p v-html="classItem.description"></p>
+                        <p class="location">Location: {{ classItem.location }}</p>
+                        <p class="price">Price: ${{ classItem.price }}</p>
+                        <p v-if="classItem.availableSeats > 0">Seats available: {{ classItem.availableSeats }}</p>
+                        <p v-else style="color: red;">Class Full</p>
+                        <div class="rating">
+                            <span v-for="n in classItem.rating">★</span>
+                            <span v-for="n in 5 - classItem.rating">☆</span>
                         </div>
-                        <p class="grand-total">Grand Total: <span>${{ totalPrice }}</span></p>
-                    </div>
-
-                    
-                    <p>
-                        <label>Full Name:</label>
-                        <input 
-                            v-model.trim="order.fullName" 
-                            type="text" 
-                            placeholder="Enter full name" 
-                            :class="{'invalid': !isValidName && order.fullName !== ''}">
-                    </p>
-                    <p>
-                        <label>Phone Number:</label>
-                        <input 
-                            v-model.number="order.phoneNumber" 
-                            type="number" 
-                            placeholder="Enter phone number" 
-                            :class="{'invalid': !isValidPhoneNumber && order.phoneNumber !== null}">
-                    </p>
-                    <div id="orderInfoDiv">
-                        <h2>Order Preview</h2>
-                        <p><strong>Full Name:</strong> {{ order.fullName }}</p>
-                        <p><strong>Phone Number:</strong> {{ order.phoneNumber }}</p>
                         <button 
-                            id="submitButton" 
-                            v-on:click="submitForm" 
-                            :disabled="!isFormValid" 
-                            :class="{ 'disabled': !isFormValid }">
-                            Place Order
+                            v-on:click="addToCart(classItem)" 
+                            :disabled="classItem.availableSeats === 0" 
+                            class="enroll-button">
+                            {{ classItem.availableSeats === 0 ? "Full" : "Enroll" }}
+                        </button>
+                    </section>
+                </div>
+            </div>
+            <div v-else id="checkout-section">
+                <h2>Checkout</h2>
+                <div id="cart-summary">
+                    <h3>Cart Summary</h3>
+                    <div v-for="item in cart" class="cart-item">
+                        <img v-bind:src="imageLink(item.class.image)" alt="Class Image" class="cart-image">
+                        <div class="cart-details">
+                            <h4 class="cart-title">{{ item.class.title }}</h4>
+                            <p class="cart-location">Location: {{ item.class.location }}</p>
+                            <p class="cart-quantity">Quantity: {{ item.quantity }}</p>
+                        </div>
+                        <p class="cart-total">${{ item.class.price * item.quantity }}</p>
+                        <button class="remove-item-btn" v-on:click="removeFromCart(item.class)">
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
+                    <p class="grand-total">Grand Total: <span>${{ totalPrice }}</span></p>
                 </div>
-            </main>
-        </div>
-        <script type="text/javascript">
-            let webstore = new Vue({
-                el: "#app",
-                data: {
-                    sitename: "PostClasses",
-                    classes: [],
-                    cart: [],
-                    showClass: true,
-                    sortAttribute: "title", 
-                    isAscending: true, 
-                    order: {
-                        fullName: "",
-                        phoneNumber: null,
-                    },
+                <p>
+                    <label>Full Name:</label>
+                    <input 
+                        v-model.trim="order.fullName" 
+                        type="text" 
+                        placeholder="Enter full name" 
+                        :class="{'invalid': !isValidName && order.fullName !== ''}">
+                </p>
+                <p>
+                    <label>Phone Number:</label>
+                    <input 
+                        v-model.number="order.phoneNumber" 
+                        type="number" 
+                        placeholder="Enter phone number" 
+                        :class="{'invalid': !isValidPhoneNumber && order.phoneNumber !== null}">
+                </p>
+                <div id="orderInfoDiv">
+                    <h2>Order Preview</h2>
+                    <p><strong>Full Name:</strong> {{ order.fullName }}</p>
+                    <p><strong>Phone Number:</strong> {{ order.phoneNumber }}</p>
+                    <button 
+                        id="submitButton" 
+                        v-on:click="submitForm" 
+                        :disabled="!isFormValid" 
+                        :class="{ 'disabled': !isFormValid }">
+                        Place Order
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script type="text/javascript">
+        new Vue({
+            el: "#app",
+            data: {
+                sitename: "PostClasses",
+                classes: [],
+                cart: [],
+                showClass: true,
+                sortAttribute: "title",
+                isAscending: true,
+                order: {
+                    fullName: "",
+                    phoneNumber: null,
                 },
-
-
-                computed: {
-                    
-                    cartItemCount() {
-                        return this.cart.reduce((total, item) => total + item.quantity, 0);
-                    },
-                    sortedClasses() {
-                        let sorted = [...this.classes];
-                        sorted.sort((a, b) => {
-                            if (a[this.sortAttribute] < b[this.sortAttribute]) return this.isAscending ? -1 : 1;
-                            if (a[this.sortAttribute] > b[this.sortAttribute]) return this.isAscending ? 1 : -1;
-                            return 0;
-                        });
-                        return sorted;
-                    },
-                    totalPrice() {
-                        return this.cart.reduce((total, item) => total + item.class.price * item.quantity, 0);
-                    },
-                    isValidName() {
-                        return /^[a-zA-Z\s]+$/.test(this.order.fullName) && this.order.fullName.trim().length > 1;
-                    },
-                    isValidPhoneNumber() {
-                        return /^\d{9,}$/.test(this.order.phoneNumber);
-                    },
-                    isFormValid() {
-                        return this.isValidName && this.isValidPhoneNumber;
+            },
+            computed: {
+                cartItemCount() {
+                    return this.cart.reduce((total, item) => total + item.quantity, 0);
+                },
+                sortedClasses() {
+                    return [...this.classes].sort((a, b) => {
+                        let aVal = a[this.sortAttribute];
+                        let bVal = b[this.sortAttribute];
+                        if (typeof aVal === "string") aVal = aVal.toLowerCase();
+                        if (typeof bVal === "string") bVal = bVal.toLowerCase();
+                        if (this.isAscending) return aVal > bVal ? 1 : -1;
+                        return aVal < bVal ? 1 : -1;
+                    });
+                },
+                totalPrice() {
+                    return this.cart.reduce((total, item) => total + item.class.price * item.quantity, 0);
+                },
+                isValidName() {
+                    return /^[a-zA-Z\s]+$/.test(this.order.fullName) && this.order.fullName.trim().length > 1;
+                },
+                isValidPhoneNumber() {
+                    return /^\d{9,}$/.test(this.order.phoneNumber);
+                },
+                isFormValid() {
+                    return this.isValidName && this.isValidPhoneNumber;
+                }
+            },
+            methods: {
+                toggleSortOrder() {
+                    this.isAscending = !this.isAscending;
+                },
+                addToCart(classItem) {
+                    const cartItem = this.cart.find(item => item.class.id === classItem.id);
+                    if (cartItem) {
+                        cartItem.quantity++;
+                    } else {
+                        this.cart.push({ class: classItem, quantity: 1 });
                     }
-
+                    classItem.availableSeats--; // Decrease available seats only for the selected class
                 },
-
-
-                methods: {
-
-                    fetchGET() {
-                    fetch('https://postclasses-backend.onrender.com/collection/lessons', {
-                        method: 'GET', // set the HTTP method as 'GET'
-                        headers: {
-                            'Content-Type': 'application/json', // set the data type as JSON
-                        },
-                        // body: JSON.stringify(newProduct), // need to stringify the JSON object
-                    })
+                removeFromCart(classItem) {
+                    const cartItemIndex = this.cart.findIndex(item => item.class.id === classItem.id);
+                    if (cartItemIndex > -1) {
+                        const cartItem = this.cart[cartItemIndex];
+                        cartItem.class.availableSeats += cartItem.quantity; // Restore seats
+                        this.cart.splice(cartItemIndex, 1);
+                    }
+                    if (this.cart.length === 0) {
+                        this.showClass = true;
+                    }
+                },
+                showCheckout() {
+                    this.showClass = !this.showClass;
+                },
+                submitForm() {
+                    alert('Order submitted successfully!');
+                    console.log('Order Details:', this.order);
+                },
+                availableSeats(classItem) {
+                    return classItem.availableSeats;
+                },
+                imageLink(image) {
+                    return `https://postclasses-backend.onrender.com/${image}`;
+                },
+                fetchProducts() {
+                    fetch('https://postclasses-backend.onrender.com/collection/lessons')
                         .then(response => response.json())
-                        .then(responseJSON => {
-                            this.classes = responseJSON;
+                        .then(data => {
+                            this.classes = data;
                         })
-                        .catch((error) => {
-                            document.getElementById('error').innerText = error;
-                        });
-                },
-
-
-
-                    toggleSortOrder() {
-                        this.isAscending = !this.isAscending;
-                    },
-                    addToCart(classItem) {
-                        const cartItem = this.cart.find(item => item.class.id === classItem.id);
-                        if (cartItem) {
-                            cartItem.quantity++;
-                        } else {
-                            this.cart.push({ class: classItem, quantity: 1 });
-                        }
-                    },
-                    removeFromCart(classItem) {
-                        this.cart = this.cart.filter(item => item.class.id !== classItem.id);
-                        if (this.cart.length === 0) {
-                            this.showClass = true;
-                        }
-                    },
-                    showCheckout() {
-                        this.showClass = !this.showClass;
-                    },
-                    submitForm() {
-                        alert('Order submitted successfully!');
-                        console.log('Order Details:', this.order);
-                    },
-                    availableStock(classItem) {
-                        const cartItem = this.cart.find(item => item.class.id === classItem.id);
-                        return classItem.availableSeats - (cartItem ? cartItem.quantity : 0);
-                    },
-
-                    // imageLink(image) {
-                    //     return `https://localhost:3000/${image}`;
-                    // },
-
-                    imageLink(image) {
-                        return `https://postclasses-backend.onrender.com/${image}`;
-                    }
-
-
-                },
-
-
-                
-
-
-            });
-        </script>
-    </body>
-    </html>
+                        .catch(error => console.error("Error fetching products:", error));
+                }
+            },
+            created() {
+                this.fetchProducts();
+            }
+        });
+    </script>
+</body>
+</html>
