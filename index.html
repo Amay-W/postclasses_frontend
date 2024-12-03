@@ -12,7 +12,7 @@
 <body>
     <div id="app">
         <header>
-            <img id="logo" src="assets/POST2.png" alt="PostClasses Logo">
+            <img id="logo" v-bind:src="imageLink('assets/POST2.png')" alt="PostClasses Logo">
             <div id="sort-section">
                 <label for="sort-dropdown">Sort by:</label>
                 <select v-model="sortAttribute" id="sort-dropdown" class="sort-dropdown">
@@ -41,7 +41,7 @@
             <div id="class-section" v-if="showClass">
                 <div v-for="classItem in sortedClasses" class="class-box">
                     <figure>
-                        <img v-bind:src="classItem.image" alt="Class Image">
+                        <img v-bind:src="imageLink(classItem.image)" alt="Class Image">
                     </figure>
                     <section>
                         <h2 v-text="classItem.title"></h2>
@@ -183,7 +183,17 @@
                 availableStock(classItem) {
                     const cartItem = this.cart.find(item => item.class.id === classItem.id);
                     return classItem.availableSeats - (cartItem ? cartItem.quantity : 0);
+                },
+
+                // imageLink(image) {
+                //     return `https://localhost:3000/${image}`;
+                // },
+
+                imageLink(image) {
+                    return `http://localhost:3000/assets/${image}`;
                 }
+
+
             }
         });
     </script>
