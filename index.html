@@ -36,7 +36,7 @@
         </header>
         <main>
             <div id="class-section" v-if="showClass">
-                <div v-for="classItem in sortedClasses" class="class-box">
+                <div v-for="classItem in sortedClasses" :key="classItem._id" class="class-box">
                     <figure>
                         <img v-bind:src="imageLink(classItem.image)" alt="Class Image">
                     </figure>
@@ -48,8 +48,8 @@
                         <p v-if="classItem.availableSeats > 0">Seats available: {{ classItem.availableSeats }}</p>
                         <p v-else style="color: red;">Class Full</p>
                         <div class="rating">
-                            <span v-for="n in classItem.rating">★</span>
-                            <span v-for="n in 5 - classItem.rating">☆</span>
+                            <span v-for="n in classItem.rating" :key="n">★</span>
+                            <span v-for="n in 5 - classItem.rating" :key="`empty-${n}`">☆</span>
                         </div>
                         <button 
                             v-on:click="addToCart(classItem)" 
@@ -64,14 +64,14 @@
                 <h2>Checkout</h2>
                 <div id="cart-summary">
                     <h3>Cart Summary</h3>
-                    <div v-for="item in cart" class="cart-item">
+                    <div v-for="item in cart" :key="item.class._id" class="cart-item">
                         <img v-bind:src="imageLink(item.class.image)" alt="Class Image" class="cart-image">
                         <div class="cart-details">
                             <h4 class="cart-title">{{ item.class.title }}</h4>
                             <p class="cart-location">Location: {{ item.class.location }}</p>
                             <p class="cart-quantity">Quantity: {{ item.quantity }}</p>
                         </div>
-                        <p class="cart-total">${{ item.class.price * item.quantity }}</p>
+                        <p class="cart-total">Total: ${{ item.class.price * item.quantity }}</p>
                         <button class="remove-item-btn" v-on:click="removeFromCart(item.class)">
                             <i class="fas fa-trash-alt"></i>
                         </button>
@@ -134,8 +134,7 @@
                         let bVal = b[this.sortAttribute];
                         if (typeof aVal === "string") aVal = aVal.toLowerCase();
                         if (typeof bVal === "string") bVal = bVal.toLowerCase();
-                        if (this.isAscending) return aVal > bVal ? 1 : -1;
-                        return aVal < bVal ? 1 : -1;
+                        return this.isAscending ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
                     });
                 },
                 totalPrice() {
@@ -156,23 +155,22 @@
                     this.isAscending = !this.isAscending;
                 },
                 addToCart(classItem) {
-                    const cartItem = this.cart.find(item => item.class.id === classItem.id);
+                    const cartItem = this.cart.find(item => item.class._id === classItem._id);
                     if (cartItem) {
                         cartItem.quantity++;
                     } else {
                         this.cart.push({ class: classItem, quantity: 1 });
                     }
-                    classItem.availableSeats--; // Decrease available seats only for the selected class
+                    classItem.availableSeats--; // Reduce available seats for the specific class
                 },
                 removeFromCart(classItem) {
-                    const cartItemIndex = this.cart.findIndex(item => item.class.id === classItem.id);
+                    const cartItemIndex = this.cart.findIndex(item => item.class._id === classItem._id);
                     if (cartItemIndex > -1) {
-                        const cartItem = this.cart[cartItemIndex];
-                        cartItem.class.availableSeats += cartItem.quantity; // Restore seats
-                        this.cart.splice(cartItemIndex, 1);
+                        this.cart[cartItemIndex].class.availableSeats += this.cart[cartItemIndex].quantity; // Restore seats
+                        this.cart.splice(cartItemIndex, 1); // Remove from cart
                     }
                     if (this.cart.length === 0) {
-                        this.showClass = true;
+                        this.showClass = true; // Redirect to shopping page
                     }
                 },
                 showCheckout() {
@@ -181,9 +179,6 @@
                 submitForm() {
                     alert('Order submitted successfully!');
                     console.log('Order Details:', this.order);
-                },
-                availableSeats(classItem) {
-                    return classItem.availableSeats;
                 },
                 imageLink(image) {
                     return `https://postclasses-backend.onrender.com/${image}`;
