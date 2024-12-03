@@ -231,23 +231,28 @@
                     })
                 },
                 fetchGetSearch() {
-                    if(!this.query) {
-                        fetchProducts();
-                    }
-                    else {
-                        fetch(`https://postclasses-backend.onrender.com/collection/lessons?q=${this.query.toLowerCase}`, {
-                            method: 'GET', // set the HTTP method as 'GET'
-                            headers: {
-                                'Content-Type': 'application/json', // set the data type as JSON
-                            },
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                this.classes = data;
-                            })
-                            .catch(error => console.error("Error fetching get search products:", error));
-                    }
-                }
+    if (!this.query.trim()) {
+        this.fetchProducts(); // If no query, fetch all products
+    } else {
+        fetch(`https://postclasses-backend.onrender.com/search/lessons?q=${encodeURIComponent(this.query.trim())}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to fetch search results');
+            return response.json();
+        })
+        .then(data => {
+            this.classes = data; // Update the classes with search results
+        })
+        .catch(error => {
+            console.error("Error fetching search results:", error);
+        });
+    }
+}
+
             },
             created() {
                 this.fetchProducts();
