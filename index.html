@@ -16,7 +16,7 @@
             <button 
                 id="checkout_button" 
                 v-on:click="showCheckout" 
-                :disabled="cartItemCount === 0"
+                :disabled="cart.length === 0"
                 class="checkout-button">
                 {{ cartItemCount || "0" }}
                 <i class="fas fa-cart-plus"></i> Checkout
@@ -51,13 +51,19 @@
                 <h2>Checkout</h2>
                 <div id="cart-summary">
                     <h3>Cart Summary</h3>
-                    <div v-for="item in cartItems" id="cart-summary-item">
-                        <img v-bind:src="item.image" alt="Class Image">
-                        <span>{{ item.title }}</span>
-                        <span>${{ item.price }}</span>
+                    <div v-for="item in cart" class="cart-item">
+                        <img v-bind:src="item.class.image" alt="Class Image" class="cart-image">
+                        <div class="cart-details">
+                            <h4 class="cart-title">{{ item.class.title }}</h4>
+                            <p class="cart-quantity">Quantity: {{ item.quantity }}</p>
+                        </div>
+                        <p class="cart-total">${{ item.class.price * item.quantity }}</p>
                     </div>
-                    <p id="total-amount">Total: ${{ totalPrice }}</p>
+                    <p class="grand-total">Grand Total: <span>${{ totalPrice }}</span></p>
                 </div>
+                
+                
+                
                 <p><label>First Name:</label><input v-model.trim="order.firstName" type="text" placeholder="Enter first name"></p>
                 <p><label>Last Name:</label><input v-model.trim="order.lastName" type="text" placeholder="Enter last name"></p>
                 <p><label>Address:</label><input v-model.trim="order.address" type="text" placeholder="Enter address"></p>
@@ -107,16 +113,13 @@
             },
             computed: {
                 cartItemCount() {
-                    return this.cart.length;
+                    return this.cart.reduce((total, item) => total + item.quantity, 0);
                 },
                 sortedClasses() {
                     return this.classes.sort((a, b) => a.price - b.price);
                 },
-                cartItems() {
-                    return this.classes.filter(classItem => this.cart.includes(classItem.id));
-                },
                 totalPrice() {
-                    return this.cartItems.reduce((total, classItem) => total + classItem.price, 0);
+                    return this.cart.reduce((total, item) => total + item.class.price * item.quantity, 0);
                 }
             },
             methods: {
@@ -124,19 +127,22 @@
                     return this.availableStock(classItem) > 0;
                 },
                 addToCart(classItem) {
-                    this.cart.push(classItem.id);
+                    const cartItem = this.cart.find(item => item.class.id === classItem.id);
+                    if (cartItem) {
+                        cartItem.quantity++;
+                    } else {
+                        this.cart.push({ class: classItem, quantity: 1 });
+                    }
                 },
                 showCheckout() {
-                    if (this.cartItemCount > 0) {
-                        this.showClass = !this.showClass;
-                    }
+                    this.showClass = !this.showClass;
                 },
                 submitForm() {
                     alert('Order submitted!');
                 },
                 availableStock(classItem) {
-                    const inCart = this.cart.filter(id => id === classItem.id).length;
-                    return classItem.availableSeats - inCart;
+                    const cartItem = this.cart.find(item => item.class.id === classItem.id);
+                    return classItem.availableSeats - (cartItem ? cartItem.quantity : 0);
                 }
             }
         });
