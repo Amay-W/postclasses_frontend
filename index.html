@@ -3,12 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PostSchool</title>
+    <title>PostClasses</title>
     <style>
-        /* Add similar styling as in the previous HTML for consistency */
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        #app {
+            width: 100%;
+            max-width: 1200px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 20px;
+        }
+        #title {
+            font-size: 24px;
+            color: #333;
+        }
+        #checkout_button {
+            background-color: #4a90e2;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #checkout_button:hover {
+            background-color: #357abd;
+        }
+        #product-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+        }
+        .product-box {
+            width: 30%; /* Ensures three items per row */
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .product-box:hover {
+            transform: translateY(-5px);
+        }
+        .product-box figure {
+            margin: 0;
+            width: 100%;
+        }
+        .product-box img {
+            width: 100%;
+            height: 180px; /* Fixed height for uniform image display */
+            object-fit: cover; /* Ensures images fill the box without distortion */
+            border-bottom: 1px solid #ddd;
+        }
+        .product-box section {
+            padding: 15px;
+        }
+        .product-box h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .product-box p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .price {
+            font-weight: bold;
+            color: #4a90e2;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .rating {
+            color: #f39c12;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        button.enroll-button {
+            width: 100%;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button.enroll-button:hover {
+            background-color: #357abd;
+        }
+        #orderInfoDiv {
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 10px auto;
+            max-width: 500px;
+        }
+        #orderInfoDiv h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        #orderInfoDiv p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-    <script src="javascripts/classes.js"></script>
+    <script src="javascripts/products.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 <body>
@@ -21,32 +143,51 @@
             </button>
         </header>
         <main>
-            <div v-if="showClass">
-                <div v-for="classItem in sortedClasses" class="class-box">
+            <div id="product-section" v-if="showProduct">
+                <div v-for="product in sortedProducts" class="product-box">
                     <figure>
-                        <img v-bind:src="classItem.image" alt="Class Image">
+                        <img v-bind:src="product.image" alt="Class Image">
                     </figure>
                     <section>
-                        <h2 v-text="classItem.title"></h2>
-                        <p v-html="classItem.description"></p>
-                        <p v-if="availableSeats(classItem) > 0">Seats available: {{ availableSeats(classItem) }}</p>
+                        <h2 v-text="product.title"></h2>
+                        <p v-html="product.description"></p>
+                        <p class="price">Price: ${{ product.price / 100 }}</p>
+                        <p v-if="availableStock(product) > 0">Seats available: {{ availableStock(product) }}</p>
                         <p v-else style="color: red;">Class Full</p>
-                        <p>Price: {{ classItem.price }}</p>
-                        <button v-on:click="addToCart(classItem)" v-if="canAddToCart(classItem)">
+                        <div class="rating">
+                            <span v-for="n in product.rating">★</span>
+                            <span v-for="n in 5 - product.rating">☆</span>
+                        </div>
+                        <button v-on:click="addToCart(product)" v-if="canAddToCart(product)" class="enroll-button">
                             Enroll
                         </button>
-                        <button disabled v-else>
+                        <button disabled v-else class="enroll-button">
                             Full
                         </button>
-                        <div>
-                            <span v-for="n in classItem.rating">★</span>
-                            <span v-for="n in 5 - classItem.rating">☆</span>
-                        </div>
                     </section>
                 </div>
             </div>
             <div v-else>
-                <h2>Checkout</h2>
+                <div id="orderInfoDiv">
+                    <h2>Checkout</h2>
+                    <p><strong>First Name:</strong> <input v-model.trim="order.firstName"></p>
+                    <p><strong>Last Name:</strong> <input v-model.trim="order.lastName"></p>
+                    <p><strong>Address:</strong> <input v-model.trim="order.address"></p>
+                    <p><strong>City:</strong> <input v-model.trim="order.city"></p>
+                    <p><strong>State:</strong>
+                        <select v-model="order.state">
+                            <option disabled value="">Select State</option>
+                            <option v-for="(state, key) in states" v-bind:value="key">{{ state }}</option>
+                        </select>
+                    </p>
+                    <p><strong>Zip/Postal Code:</strong> <input v-model.number="order.zip" type="number"></p>
+                    <p><input type="checkbox" v-model="order.gift">
+                        <label for="gift">Ship as Gift</label>
+                    </p>
+                    <p><input type="radio" value="Home" v-model="order.method"> Home
+                    <input type="radio" value="Business" v-model="order.method"> Business</p>
+                    <button id="submitButton" v-on:click="submitForm">Place Order</button>
+                </div>
             </div>
         </main>
     </div>
@@ -54,10 +195,10 @@
         let webstore = new Vue({
             el: "#app",
             data: {
-                sitename: "PostSchool",
-                products: classes, 
+                sitename: "PostClasses",
+                products: products,
                 cart: [],
-                showClass: true,
+                showProduct: true,
                 order: {
                     firstName: "",
                     lastName: "",
@@ -76,35 +217,33 @@
                 }
             },
             methods: {
-                canAddToCart: function(classItem) {
-                    return this.availableSeats(classItem) > this.cart.filter(id => id === classItem.id).length;
+                canAddToCart: function(product) {
+                    return this.availableStock(product) > this.cart.filter(id => id === product.id).length;
                 },
-                addToCart: function(classItem) {
-                    this.cart.push(classItem.id);
+                addToCart: function(product) {
+                    this.cart.push(product.id);
                 },
                 showCheckout: function() {
-                    this.showClass = !this.showClass;
+                    this.showProduct = !this.showProduct;
                 },
                 submitForm: function() {
-                    alert('Enrollment submitted!');
+                    alert('Order submitted!');
                 },
-                availableSeats: function(classItem) {
-                    return classItem.availableSeats - this.cart.filter(id => id === classItem.id).length;
+                availableStock: function(product) {
+                    return product.availableInventory - this.cart.filter(id => id === product.id).length;
                 }
             },
             computed: {
                 cartItemCount: function() {
                     return this.cart.length || "";
                 },
-                sortedClasses() {
-                    let classesArray = this.products.slice(0);
+                sortedProducts() {
+                    let productsArray = this.products.slice(0);
                     function compare(a, b) {
-                        if (a.price > b.price)
-                            return 1;
-                        if (a.price < b.price)
-                            return -1;
+                        if (a.price > b.price) return 1;
+                        if (a.price < b.price) return -1;
                     }
-                    return classesArray.sort(compare);
+                    return productsArray.sort(compare);
                 },
             }
         });
