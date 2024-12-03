@@ -61,27 +61,38 @@
                     </div>
                     <p class="grand-total">Grand Total: <span>${{ totalPrice }}</span></p>
                 </div>
-                
-                
-                
-                <p><label>First Name:</label><input v-model.trim="order.firstName" type="text" placeholder="Enter first name"></p>
-                <p><label>Last Name:</label><input v-model.trim="order.lastName" type="text" placeholder="Enter last name"></p>
-                <p><label>Address:</label><input v-model.trim="order.address" type="text" placeholder="Enter address"></p>
-                <p><label>Emirate:</label>
-                    <select v-model="order.emirate">
-                        <option disabled value="">Select Emirate</option>
-                        <option v-for="(emirate, key) in emirates" v-bind:value="key">{{ emirate }}</option>
-                    </select>
+
+                <!-- Updated Full Name and Phone Number -->
+                <p>
+                    <label>Full Name:</label>
+                    <input 
+                        v-model.trim="order.fullName" 
+                        type="text" 
+                        placeholder="Enter full name" 
+                        :class="{'invalid': !isValidName && order.fullName !== ''}"
+                    >
                 </p>
-                <p><label>Zip Code:</label><input v-model.number="order.zip" type="number" placeholder="Enter ZIP code"></p>
+                <p>
+                    <label>Phone Number:</label>
+                    <input 
+                        v-model.number="order.phoneNumber" 
+                        type="number" 
+                        placeholder="Enter phone number" 
+                        :class="{'invalid': !isValidPhoneNumber && order.phoneNumber !== null}"
+                    >
+                </p>
                 <div id="orderInfoDiv">
                     <h2>Order Preview</h2>
-                    <p><strong>First Name:</strong> {{ order.firstName }}</p>
-                    <p><strong>Last Name:</strong> {{ order.lastName }}</p>
-                    <p><strong>Address:</strong> {{ order.address }}</p>
-                    <p><strong>Emirate:</strong> {{ emirates[order.emirate] }}</p>
-                    <p><strong>Zip Code:</strong> {{ order.zip }}</p>
-                    <button id="submitButton" v-on:click="submitForm">Place Order</button>
+                    <p><strong>Full Name:</strong> {{ order.fullName }}</p>
+                    <p><strong>Phone Number:</strong> {{ order.phoneNumber }}</p>
+                    <button 
+                        id="submitButton" 
+                        v-on:click="submitForm" 
+                        :disabled="!isFormValid" 
+                        :class="{ 'disabled': !isFormValid }"
+                    >
+                        Place Order
+                    </button>
                 </div>
             </div>
         </main>
@@ -95,21 +106,9 @@
                 cart: [],
                 showClass: true,
                 order: {
-                    firstName: "",
-                    lastName: "",
-                    address: "",
-                    emirate: "",
-                    zip: "",
+                    fullName: "",
+                    phoneNumber: null, // Phone number field
                 },
-                emirates: {
-                    DU: "Dubai",
-                    AD: "Abu Dhabi",
-                    SH: "Sharjah",
-                    AJ: "Ajman",
-                    UQ: "Umm Al Quwain",
-                    RK: "Ras Al Khaimah",
-                    FU: "Fujairah",
-                }
             },
             computed: {
                 cartItemCount() {
@@ -120,6 +119,18 @@
                 },
                 totalPrice() {
                     return this.cart.reduce((total, item) => total + item.class.price * item.quantity, 0);
+                },
+                isValidName() {
+                    // Name must contain only letters and spaces, and be at least 2 characters long
+                    return /^[a-zA-Z\s]+$/.test(this.order.fullName) && this.order.fullName.trim().length > 1;
+                },
+                isValidPhoneNumber() {
+                    // Phone number must be a valid integer and at least 10 digits
+                    return /^\d{9,}$/.test(this.order.phoneNumber);
+                },
+                isFormValid() {
+                    // Form is valid only if both name and phone number are valid
+                    return this.isValidName && this.isValidPhoneNumber;
                 }
             },
             methods: {
@@ -138,7 +149,8 @@
                     this.showClass = !this.showClass;
                 },
                 submitForm() {
-                    alert('Order submitted!');
+                    alert('Order submitted successfully!');
+                    console.log('Order Details:', this.order);
                 },
                 availableStock(classItem) {
                     const cartItem = this.cart.find(item => item.class.id === classItem.id);

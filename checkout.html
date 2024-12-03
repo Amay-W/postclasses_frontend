@@ -20,6 +20,12 @@
                         }
                     }
                     return count;
+                },
+                isValidName(name) {
+                    return /^[a-zA-Z\s]+$/.test(name) && name.trim().length > 1;
+                },
+                isValidPhoneNumber(phoneNumber) {
+                    return /^\d{10,}$/.test(phoneNumber);
                 }
             }
         });

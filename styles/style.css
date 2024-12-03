@@ -359,3 +359,24 @@ button.enroll-button:disabled {
     color: #e74c3c;
     font-weight: bold;
 }
+
+
+#checkout-section input[type="number"] {
+    width: 70%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+
+button#submitButton.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+input.invalid {
+    border: 2px solid #e74c3c;
+    background-color: #fdecea;
+}
