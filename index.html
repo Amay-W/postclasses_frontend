@@ -4,213 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PostClasses</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            background-color: #f4f4f9;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-        #app {
-            width: 100%;
-            max-width: 1200px;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 2px solid #ccc;
-            margin-bottom: 20px;
-        }
-        #logo {
-            height: 90px;
-        }
-        #checkout_button {
-            background-color: #4a90e2;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        #checkout_button:hover {
-            background-color: #357abd;
-        }
-        #class-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: space-between;
-        }
-        .class-box {
-            width: 30%;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-        .class-box:hover {
-            transform: translateY(-5px);
-        }
-        .class-box figure {
-            margin: 0;
-            width: 100%;
-        }
-        .class-box img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-bottom: 1px solid #ddd;
-        }
-        .class-box section {
-            padding: 15px;
-        }
-        .class-box h2 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .class-box p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        .price {
-            font-weight: bold;
-            color: #4a90e2;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        .rating {
-            color: #f39c12;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-        button.enroll-button {
-            width: 100%;
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button.enroll-button:hover {
-            background-color: #357abd;
-        }
-
-        button.enroll-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-        #checkout-section {
-            max-width: 600px;
-            background-color: #f8f8f8;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px auto;
-        }
-        #checkout-section h2 {
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 15px;
-            text-align: center;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 10px;
-        }
-        #checkout-section p {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 15px;
-            color: #555;
-            margin: 10px 0;
-        }
-        #checkout-section input[type="text"],
-        #checkout-section input[type="number"],
-        #checkout-section select {
-            width: 70%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-            margin-left: 10px;
-        }
-        #checkout-section label {
-            font-size: 15px;
-            color: #555;
-        }
-        #orderInfoDiv {
-            background-color: #fafafa;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        #orderInfoDiv h2 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 20px;
-            text-align: center;
-        }
-        #orderInfoDiv p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        #cart-summary {
-            margin-bottom: 20px;
-        }
-        #cart-summary img {
-            height: 50px;
-            width: 50px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-        #cart-summary-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        #total-amount {
-            font-weight: bold;
-            color: #4a90e2;
-            font-size: 18px;
-            text-align: right;
-            margin-top: 10px;
-        }
-        #submitButton {
-            width: 100%;
-            padding: 12px;
-            background-color: #4a90e2;
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 15px;
-        }
-        #submitButton:hover {
-            background-color: #357abd;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/style.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
     <script src="javascripts/classes.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
@@ -241,11 +35,11 @@
                             <span v-for="n in 5 - classItem.rating">☆</span>
                         </div>
                         <button 
-    v-on:click="addToCart(classItem)" 
-    :disabled="availableStock(classItem) === 0" 
-    class="enroll-button">
-    {{ availableStock(classItem) === 0 ? "Full" : "Enroll" }}
-</button>
+                            v-on:click="addToCart(classItem)" 
+                            :disabled="availableStock(classItem) === 0" 
+                            class="enroll-button">
+                            {{ availableStock(classItem) === 0 ? "Full" : "Enroll" }}
+                        </button>
                     </section>
                 </div>
             </div>
@@ -323,8 +117,8 @@
             },
             methods: {
                 canAddToCart(classItem) {
-    return this.availableStock(classItem) > 0;
-},
+                    return this.availableStock(classItem) > 0;
+                },
                 addToCart(classItem) {
                     this.cart.push(classItem.id);
                 },
@@ -335,9 +129,9 @@
                     alert('Order submitted!');
                 },
                 availableStock(classItem) {
-    const inCart = this.cart.filter(id => id === classItem.id).length;
-    return classItem.availableSeats - inCart;
-}
+                    const inCart = this.cart.filter(id => id === classItem.id).length;
+                    return classItem.availableSeats - inCart;
+                }
             }
         });
     </script>
