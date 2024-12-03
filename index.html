@@ -12,6 +12,7 @@
     <div id="app">
         <header>
             <img id="logo" v-bind:src="imageLink('assets/POST2.png')" alt="PostClasses Logo">
+            <input v-on:input="fetchGetSearch" v-model.trim="query" type="text" name="search">
             <div id="sort-section">
                 <label for="sort-dropdown">Sort by:</label>
                 <select v-model="sortAttribute" id="sort-dropdown" class="sort-dropdown">
@@ -36,7 +37,7 @@
         </header>
         <main>
             <div id="class-section" v-if="showClass">
-                <div v-for="classItem in sortedClasses" :key="classItem._id" class="class-box">
+                <div v-for="classItem in sortedClasses" :key="classItem.id" class="class-box">
                     <figure>
                         <img v-bind:src="imageLink(classItem.image)" alt="Class Image">
                     </figure>
@@ -49,7 +50,7 @@
                         <p v-else style="color: red;">Class Full</p>
                         <div class="rating">
                             <span v-for="n in classItem.rating" :key="n">★</span>
-                            <span v-for="n in 5 - classItem.rating" :key="`empty-${n}`">☆</span>
+                            <span v-for="n in 5 - classItem.rating" :key="n">☆</span>
                         </div>
                         <button 
                             v-on:click="addToCart(classItem)" 
@@ -64,7 +65,7 @@
                 <h2>Checkout</h2>
                 <div id="cart-summary">
                     <h3>Cart Summary</h3>
-                    <div v-for="item in cart" :key="item.class._id" class="cart-item">
+                    <div v-for="item in cart" :key="item.class.id" class="cart-item">
                         <img v-bind:src="imageLink(item.class.image)" alt="Class Image" class="cart-image">
                         <div class="cart-details">
                             <h4 class="cart-title">{{ item.class.title }}</h4>
@@ -123,6 +124,7 @@
                     fullName: "",
                     phoneNumber: null,
                 },
+                query: ''
             },
             computed: {
                 cartItemCount() {
@@ -134,7 +136,7 @@
                         let bVal = b[this.sortAttribute];
                         if (typeof aVal === "string") aVal = aVal.toLowerCase();
                         if (typeof bVal === "string") bVal = bVal.toLowerCase();
-                        return this.isAscending ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
+                        return this.isAscending ? aVal - bVal : bVal - aVal;
                     });
                 },
                 totalPrice() {
@@ -161,7 +163,7 @@
                     } else {
                         this.cart.push({ class: classItem, quantity: 1 });
                     }
-                    classItem.availableSeats--; // Reduce available seats for the specific class
+                    classItem.availableSeats--; // Reduce seats for the specific class
                 },
                 removeFromCart(classItem) {
                     const cartItemIndex = this.cart.findIndex(item => item.class._id === classItem._id);
@@ -169,27 +171,82 @@
                         this.cart[cartItemIndex].class.availableSeats += this.cart[cartItemIndex].quantity; // Restore seats
                         this.cart.splice(cartItemIndex, 1); // Remove from cart
                     }
-                    if (this.cart.length === 0) {
-                        this.showClass = true; // Redirect to shopping page
-                    }
                 },
                 showCheckout() {
                     this.showClass = !this.showClass;
                 },
                 submitForm() {
-                    alert('Order submitted successfully!');
-                    console.log('Order Details:', this.order);
+                    this.fetchPostOrder();
                 },
                 imageLink(image) {
                     return `https://postclasses-backend.onrender.com/${image}`;
                 },
                 fetchProducts() {
-                    fetch('https://postclasses-backend.onrender.com/collection/lessons')
+                    fetch('https://postclasses-backend.onrender.com/collection/lessons', {
+                        method: 'GET', // set the HTTP method as 'GET'
+                        headers: {
+                            'Content-Type': 'application/json', // set the data type as JSON
+                        },
+                    })
                         .then(response => response.json())
                         .then(data => {
                             this.classes = data;
                         })
                         .catch(error => console.error("Error fetching products:", error));
+                },
+                fetchPostOrder() {
+                    const newOrder = {
+                        ...this.order,
+                        subject_ids: this.cart.map(item => item._id),
+                        seatsOrdered: this.cart.map(item => item.orderedQuantity)
+                    };
+                    fetch('https://postclasses-backend.onrender.com/collection/orders',{
+                        method: 'POST', // set the HTTP method as 'POST'
+                        headers: {
+                            'Content-Type': 'application/json', // set the data type as JSON
+                        },
+                        body: JSON.stringify(newOrder), // need to stringify the JSON object
+                    })
+                        .then(response => response.json())
+                        .then(responseJSON => {
+                            alert("Order Submited");
+                            this.fetchPutUpdate();
+                        })
+                        .catch(error => console.error("Error fetching post orders:", error));
+                },
+                fetchPutUpdate() {
+                    this.cart.forEach(classItem => {
+                        const newAvailableSeats = { availableSeats: classItem.availableSeats }; // Use correct `subject`
+                        fetch(`https://postclasses-backend.onrender.com/collection/lessons${classItem._id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(newAvailableSeats),
+                        })
+                            .then(responseJSON => {
+                                this.cart = []; // Empty the cart
+                                this.showCheckout(); // Close the checkout Section
+                            })
+                            .then(data => {})
+                            .catch(error => console.error("Error fetching put update in products:", error));
+                    })
+                },
+                fetchGetSearch() {
+                    if(!this.query) {
+                        fetchProducts();
+                    }
+                    else {
+                        fetch(`https://postclasses-backend.onrender.com/collection/lessons?q=${this.query.toLowerCase}`, {
+                            method: 'GET', // set the HTTP method as 'GET'
+                            headers: {
+                                'Content-Type': 'application/json', // set the data type as JSON
+                            },
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                this.classes = data;
+                            })
+                            .catch(error => console.error("Error fetching get search products:", error));
+                    }
                 }
             },
             created() {
