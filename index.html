@@ -12,7 +12,7 @@
     <div id="app">
         <header>
             <img id="logo" v-bind:src="imageLink('assets/POST2.png')" alt="PostClasses Logo">
-            <input v-on:input="fetchGetSearch" v-model.trim="query" type="text" name="search">
+            <input v-on:input="fetchGetSearch" v-model.trim="query" type="text" name="search" placeholder="Search...">
             <div id="sort-section">
                 <label for="sort-dropdown">Sort by:</label>
                 <select v-model="sortAttribute" id="sort-dropdown" class="sort-dropdown">
@@ -136,7 +136,7 @@
                         let bVal = b[this.sortAttribute];
                         if (typeof aVal === "string") aVal = aVal.toLowerCase();
                         if (typeof bVal === "string") bVal = bVal.toLowerCase();
-                        return this.isAscending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                        return this.isAscending ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
                     });
                 },
                 totalPrice() {
@@ -163,63 +163,39 @@
                     } else {
                         this.cart.push({ class: classItem, quantity: 1 });
                     }
-                    classItem.availableSeats--; // Reduce seats for the specific class
+                    classItem.availableSeats--;
                 },
                 removeFromCart(classItem) {
                     const cartItemIndex = this.cart.findIndex(item => item.class._id === classItem._id);
                     if (cartItemIndex > -1) {
-                        this.cart[cartItemIndex].class.availableSeats += this.cart[cartItemIndex].quantity; // Restore seats
-                        this.cart.splice(cartItemIndex, 1); // Remove from cart
-                        if (this.cart.length === 0) {
-                            this.showClass = true; // Redirect back to shopping page
-                        }
+                        this.cart[cartItemIndex].class.availableSeats += this.cart[cartItemIndex].quantity;
+                        this.cart.splice(cartItemIndex, 1);
+                    }
+                    if (this.cart.length === 0) {
+                        this.showClass = true;
                     }
                 },
                 showCheckout() {
                     this.showClass = !this.showClass;
                 },
                 submitForm() {
-                    this.fetchPostOrder();
-                },
-                imageLink(image) {
-                    return `https://postclasses-backend.onrender.com/${image}`;
-                },
-                fetchProducts() {
-                    fetch('https://postclasses-backend.onrender.com/collection/lessons', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            this.classes = data;
-                        })
-                        .catch(error => console.error("Error fetching products:", error));
-                },
-                fetchPostOrder() {
-                    const newOrder = this.cart.map(item => ({
-                        lessonName: item.class.title,
-                        lessonId: item.class._id,
-                        quantity: item.quantity,
-                        availableSeats: item.class.availableSeats,
-                    }));
-
                     const payload = {
                         ...this.order,
-                        lessons: newOrder,
+                        items: this.cart.map(item => ({
+                            _id: item.class._id,
+                            title: item.class.title,
+                            location: item.class.location,
+                            price: item.class.price,
+                            orderedQuantity: item.quantity
+                        }))
                     };
-
                     fetch('https://postclasses-backend.onrender.com/collection/orders', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),
                     })
-                        .then(response => response.json())
                         .then(() => {
-                            alert("Order Submitted Successfully");
+                            alert("Order placed successfully!");
                             this.fetchPutUpdate();
                         })
                         .catch(error => console.error("Error submitting order:", error));
@@ -233,30 +209,29 @@
                             body: JSON.stringify(updatedSeats),
                         });
                     });
-
-                    Promise.all(promises)
-                        .then(() => {
-                            this.cart = [];
-                            this.showClass = true;
-                        })
-                        .catch(error => console.error("Error updating available seats:", error));
+                    Promise.all(promises).then(() => {
+                        this.cart = [];
+                        this.showClass = true;
+                    });
+                },
+                fetchProducts() {
+                    fetch('https://postclasses-backend.onrender.com/collection/lessons')
+                        .then(response => response.json())
+                        .then(data => { this.classes = data; })
+                        .catch(error => console.error("Error fetching products:", error));
                 },
                 fetchGetSearch() {
                     if (!this.query.trim()) {
                         this.fetchProducts();
                     } else {
-                        fetch(`https://postclasses-backend.onrender.com/search/lessons?q=${encodeURIComponent(this.query.trim())}`, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                        })
+                        fetch(`https://postclasses-backend.onrender.com/search/lessons?q=${encodeURIComponent(this.query.trim())}`)
                             .then(response => response.json())
-                            .then(data => {
-                                this.classes = data;
-                            })
+                            .then(data => { this.classes = data; })
                             .catch(error => console.error("Error fetching search results:", error));
                     }
+                },
+                imageLink(image) {
+                    return `https://postclasses-backend.onrender.com/${image}`;
                 }
             },
             created() {
