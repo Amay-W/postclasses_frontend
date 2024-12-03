@@ -380,3 +380,17 @@ input.invalid {
     border: 2px solid #e74c3c;
     background-color: #fdecea;
 }
+
+
+button.remove-item-btn {
+    background-color: transparent;
+    border: none;
+    color: #e74c3c;
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+button.remove-item-btn:hover {
+    color: #c0392b;
+}

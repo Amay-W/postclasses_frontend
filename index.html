@@ -58,11 +58,14 @@
                             <p class="cart-quantity">Quantity: {{ item.quantity }}</p>
                         </div>
                         <p class="cart-total">${{ item.class.price * item.quantity }}</p>
+                        <button class="remove-item-btn" v-on:click="removeFromCart(item.class)">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                     </div>
                     <p class="grand-total">Grand Total: <span>${{ totalPrice }}</span></p>
                 </div>
 
-                <!-- Updated Full Name and Phone Number -->
+                <!-- Full Name and Phone Number -->
                 <p>
                     <label>Full Name:</label>
                     <input 
@@ -107,7 +110,7 @@
                 showClass: true,
                 order: {
                     fullName: "",
-                    phoneNumber: null, // Phone number field
+                    phoneNumber: null,
                 },
             },
             computed: {
@@ -121,15 +124,12 @@
                     return this.cart.reduce((total, item) => total + item.class.price * item.quantity, 0);
                 },
                 isValidName() {
-                    // Name must contain only letters and spaces, and be at least 2 characters long
                     return /^[a-zA-Z\s]+$/.test(this.order.fullName) && this.order.fullName.trim().length > 1;
                 },
                 isValidPhoneNumber() {
-                    // Phone number must be a valid integer and at least 10 digits
                     return /^\d{9,}$/.test(this.order.phoneNumber);
                 },
                 isFormValid() {
-                    // Form is valid only if both name and phone number are valid
                     return this.isValidName && this.isValidPhoneNumber;
                 }
             },
@@ -143,6 +143,12 @@
                         cartItem.quantity++;
                     } else {
                         this.cart.push({ class: classItem, quantity: 1 });
+                    }
+                },
+                removeFromCart(classItem) {
+                    this.cart = this.cart.filter(item => item.class.id !== classItem.id);
+                    if (this.cart.length === 0) {
+                        this.showClass = true; // Redirect to classes section if cart is empty
                     }
                 },
                 showCheckout() {
@@ -161,3 +167,4 @@
     </script>
 </body>
 </html>
+
