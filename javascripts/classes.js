@@ -6,9 +6,9 @@ let classes = [
         description: "Master strategic thinking in our chess sessions for beginners and experts.",
         price: 2000,
         image: "assets/Chess.jpg",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 4,
-        location: "Room 16", // Added location
+        location: "Room 16", 
     },
     
     {
@@ -17,9 +17,9 @@ let classes = [
         description: "A journey into the world of poetry with opportunities to write and share.",
         price: 1000,
         image: "assets/Poetry2.jpg",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 5,
-        location: "Room 22", // Added location
+        location: "Room 22", 
     },
     
     {
@@ -28,9 +28,9 @@ let classes = [
         description: "An engaging interactive class to build confidence and communication skills.",
         price: 500,
         image: "assets/Pub1.jpg",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 4,
-        location: "Room 11", // Added location
+        location: "Room 11",
     },
     
     {
@@ -39,9 +39,9 @@ let classes = [
         description: "Learn the art of capturing moments with guidance from photography experts.",
         price: 500,
         image: "assets/Photo.png",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 4,
-        location: "Room 10", // Added location
+        location: "Room 10", 
     },
     
     {
@@ -50,9 +50,9 @@ let classes = [
         description: "Explore creativity through hands-on art projects and design fundamentals.",
         price: 500,
         image: "assets/Art.png",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 4,
-        location: "Room 15", // Added location
+        location: "Room 15", 
     },
     
     {
@@ -61,9 +61,9 @@ let classes = [
         description: "Develop debating skills and participate in Model United Nations sessions.",
         price: 500,
         image: "assets/MUN.png",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 4,
-        location: "Room 20", // Added location
+        location: "Room 20", 
     },
     
     {
@@ -72,9 +72,9 @@ let classes = [
         description: "Explore music theory and practice with various instruments and styles.",
         price: 500,
         image: "assets/Music.jpg",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 4,
-        location: "Room 12", // Added location
+        location: "Room 12", 
     },
     
     {
@@ -83,9 +83,9 @@ let classes = [
         description: "Discover the joy of cooking with hands-on classes in various cuisines.",
         price: 700,
         image: "assets/Cooking.jpg",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 5,
-        location: "Room 18", // Added location
+        location: "Room 18", 
     },
     
     {
@@ -94,9 +94,9 @@ let classes = [
         description: "Learn mindfulness and physical well-being with expert-led yoga sessions.",
         price: 600,
         image: "assets/Yoga.jpg",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 4,
-        location: "Room 14", // Added location
+        location: "Room 14", 
     },
     
     {
@@ -105,9 +105,9 @@ let classes = [
         description: "Beginner-friendly coding sessions to build foundational programming skills.",
         price: 1200,
         image: "assets/Coding.jpg",
-        availableSeats: 5, // Initial available seats
+        availableSeats: 5, 
         rating: 5,
-        location: "Room 9", // Added location
+        location: "Room 17", 
     },
 
 ];

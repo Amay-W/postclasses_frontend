@@ -382,6 +382,7 @@ input.invalid {
 }
 
 
+
 button.remove-item-btn {
     background-color: transparent;
     border: none;
@@ -394,6 +395,12 @@ button.remove-item-btn {
 button.remove-item-btn:hover {
     color: #c0392b;
 }
+
+
+
+
+
+
 
 
 
@@ -449,3 +456,14 @@ button.remove-item-btn:hover {
 .remove-button:hover {
     background-color: #c0392b;
 }
+
+
+
+
+
+
+
+
+
+
+
