@@ -37,7 +37,7 @@
         </header>
         <main>
             <div id="class-section" v-if="showClass">
-                <div v-for="classItem in sortedClasses" :key="classItem.id" class="class-box">
+                <div v-for="classItem in sortedClasses" :key="classItem._id" class="class-box">
                     <figure>
                         <img v-bind:src="imageLink(classItem.image)" alt="Class Image">
                     </figure>
@@ -65,7 +65,7 @@
                 <h2>Checkout</h2>
                 <div id="cart-summary">
                     <h3>Cart Summary</h3>
-                    <div v-for="item in cart" :key="item.class.id" class="cart-item">
+                    <div v-for="item in cart" :key="item.class._id" class="cart-item">
                         <img v-bind:src="imageLink(item.class.image)" alt="Class Image" class="cart-image">
                         <div class="cart-details">
                             <h4 class="cart-title">{{ item.class.title }}</h4>
@@ -136,7 +136,7 @@
                         let bVal = b[this.sortAttribute];
                         if (typeof aVal === "string") aVal = aVal.toLowerCase();
                         if (typeof bVal === "string") bVal = bVal.toLowerCase();
-                        return this.isAscending ? aVal - bVal : bVal - aVal;
+                        return this.isAscending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
                     });
                 },
                 totalPrice() {
@@ -170,6 +170,9 @@
                     if (cartItemIndex > -1) {
                         this.cart[cartItemIndex].class.availableSeats += this.cart[cartItemIndex].quantity; // Restore seats
                         this.cart.splice(cartItemIndex, 1); // Remove from cart
+                        if (this.cart.length === 0) {
+                            this.showClass = true; // Redirect back to shopping page
+                        }
                     }
                 },
                 showCheckout() {
@@ -183,9 +186,9 @@
                 },
                 fetchProducts() {
                     fetch('https://postclasses-backend.onrender.com/collection/lessons', {
-                        method: 'GET', // set the HTTP method as 'GET'
+                        method: 'GET',
                         headers: {
-                            'Content-Type': 'application/json', // set the data type as JSON
+                            'Content-Type': 'application/json',
                         },
                     })
                         .then(response => response.json())
@@ -195,64 +198,66 @@
                         .catch(error => console.error("Error fetching products:", error));
                 },
                 fetchPostOrder() {
-                    const newOrder = {
+                    const newOrder = this.cart.map(item => ({
+                        lessonName: item.class.title,
+                        lessonId: item.class._id,
+                        quantity: item.quantity,
+                        availableSeats: item.class.availableSeats,
+                    }));
+
+                    const payload = {
                         ...this.order,
-                        subject_ids: this.cart.map(item => item._id),
-                        seatsOrdered: this.cart.map(item => item.orderedQuantity)
+                        lessons: newOrder,
                     };
-                    fetch('https://postclasses-backend.onrender.com/collection/orders',{
-                        method: 'POST', // set the HTTP method as 'POST'
+
+                    fetch('https://postclasses-backend.onrender.com/collection/orders', {
+                        method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json', // set the data type as JSON
+                            'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify(newOrder), // need to stringify the JSON object
+                        body: JSON.stringify(payload),
                     })
                         .then(response => response.json())
-                        .then(responseJSON => {
-                            alert("Order Submited");
+                        .then(() => {
+                            alert("Order Submitted Successfully");
                             this.fetchPutUpdate();
                         })
-                        .catch(error => console.error("Error fetching post orders:", error));
+                        .catch(error => console.error("Error submitting order:", error));
                 },
                 fetchPutUpdate() {
-                    this.cart.forEach(classItem => {
-                        const newAvailableSeats = { availableSeats: classItem.availableSeats }; // Use correct `subject`
-                        fetch(`https://postclasses-backend.onrender.com/collection/lessons${classItem._id}`, {
+                    const promises = this.cart.map(item => {
+                        const updatedSeats = { availableSeats: item.class.availableSeats };
+                        return fetch(`https://postclasses-backend.onrender.com/collection/lessons/${item.class._id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(newAvailableSeats),
+                            body: JSON.stringify(updatedSeats),
+                        });
+                    });
+
+                    Promise.all(promises)
+                        .then(() => {
+                            this.cart = [];
+                            this.showClass = true;
                         })
-                            .then(responseJSON => {
-                                this.cart = []; // Empty the cart
-                                this.showCheckout(); // Close the checkout Section
-                            })
-                            .then(data => {})
-                            .catch(error => console.error("Error fetching put update in products:", error));
-                    })
+                        .catch(error => console.error("Error updating available seats:", error));
                 },
                 fetchGetSearch() {
-    if (!this.query.trim()) {
-        this.fetchProducts(); // If no query, fetch all products
-    } else {
-        fetch(`https://postclasses-backend.onrender.com/search/lessons?q=${encodeURIComponent(this.query.trim())}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to fetch search results');
-            return response.json();
-        })
-        .then(data => {
-            this.classes = data; // Update the classes with search results
-        })
-        .catch(error => {
-            console.error("Error fetching search results:", error);
-        });
-    }
-}
-
+                    if (!this.query.trim()) {
+                        this.fetchProducts();
+                    } else {
+                        fetch(`https://postclasses-backend.onrender.com/search/lessons?q=${encodeURIComponent(this.query.trim())}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                this.classes = data;
+                            })
+                            .catch(error => console.error("Error fetching search results:", error));
+                    }
+                }
             },
             created() {
                 this.fetchProducts();
