@@ -11,7 +11,11 @@
             <h1>{{ sitename }}</h1>
         </header>
         <main>
-            <p>Welcome to PostSchool!</p>
+            <div v-for="classItem in products" :key="classItem.id">
+                <h2>{{ classItem.title }}</h2>
+                <p>{{ classItem.description }}</p>
+                <p>Price: ${{ classItem.price }}</p>
+            </div>
         </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
@@ -19,7 +23,8 @@
         new Vue({
             el: "#app",
             data: {
-                sitename: "PostSchool"
+                sitename: "PostSchool",
+                products: [] 
             }
         });
     </script>
