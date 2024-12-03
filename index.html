@@ -4,27 +4,172 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PostSchool</title>
+    <style>
+        /* Add similar styling as in the previous HTML for consistency */
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <script src="javascripts/classes.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 <body>
     <div id="app">
         <header>
-            <h1>{{ sitename }}</h1>
+            <h1 id="title" v-text="sitename"></h1>
+            <button id="checkout_button" v-on:click="showCheckout">
+                {{ cartItemCount }}
+                <i class="fas fa-cart-plus"></i> Checkout
+            </button>
         </header>
         <main>
-            <div v-for="classItem in products" :key="classItem.id">
-                <h2>{{ classItem.title }}</h2>
-                <p>{{ classItem.description }}</p>
-                <p>Price: ${{ classItem.price }}</p>
+            <div v-if="showClass">
+                <div v-for="classItem in sortedClasses" class="class-box">
+                    <figure>
+                        <img v-bind:src="classItem.image" alt="Class Image">
+                    </figure>
+                    <section>
+                        <h2 v-text="classItem.title"></h2>
+                        <p v-html="classItem.description"></p>
+                        <p v-if="availableSeats(classItem) > 0">Seats available: {{ availableSeats(classItem) }}</p>
+                        <p v-else style="color: red;">Class Full</p>
+                        <p>Price: {{ classItem.price }}</p>
+                        <button v-on:click="addToCart(classItem)" v-if="canAddToCart(classItem)">
+                            Enroll
+                        </button>
+                        <button disabled v-else>
+                            Full
+                        </button>
+                        <div>
+                            <span v-for="n in classItem.rating">★</span>
+                            <span v-for="n in 5 - classItem.rating">☆</span>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div v-else>
+                <h2>Checkout</h2>
             </div>
         </main>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-    <script>
-        new Vue({
+    <script type="text/javascript">
+        let webstore = new Vue({
             el: "#app",
             data: {
                 sitename: "PostSchool",
-                products: [] 
+                products: [
+    {
+        id: 2001,
+        title: "Public Speaking Class",
+        description: "An engaging <em>interactive</em> class to build confidence and communication skills.",
+        price: 2500,
+        image: "assets/Pub1.jpg",
+        availableSeats: 20, // Seats available for enrollment
+        rating: 4,
+    },
+    {
+        id: 2002,
+        title: "Art & Design Class",
+        description: "Explore creativity through <em>hands-on</em> art projects and design fundamentals.",
+        price: 3000,
+        image: "assets/Art.png",
+        availableSeats: 15, // Seats available for enrollment
+        rating: 5,
+    },
+    {
+        id: 2003,
+        title: "Model United Nations & Debating",
+        description: "Develop debating skills and participate in <em>Model United Nations</em> sessions.",
+        price: 3500,
+        image: "assets/MUN.png",
+        availableSeats: 25, // Seats available for enrollment
+        rating: 4,
+    },
+    {
+        id: 2004,
+        title: "Poetry Class",
+        description: "A journey into the world of <em>poetry</em> with opportunities to write and share.",
+        price: 1500,
+        image: "assets/Poetry2.jpg",
+        availableSeats: 10, // Seats available for enrollment
+        rating: 5,
+    },
+    {
+        id: 2005,
+        title: "Photography Class",
+        description: "Learn the art of <em>capturing moments</em> with guidance from photography experts.",
+        price: 2800,
+        image: "assets/Photo.png",
+        availableSeats: 12, // Seats available for enrollment
+        rating: 4,
+    },
+    {
+        id: 2006,
+        title: "Music Class",
+        description: "Explore music theory and practice with various <em>instruments</em> and styles.",
+        price: 4000,
+        image: "assets/Music.jpg",
+        availableSeats: 8, // Seats available for enrollment
+        rating: 5,
+    },
+    {
+        id: 2007,
+        title: "Chess Class",
+        description: "Master strategic thinking in our <em>chess</em> sessions for beginners and experts.",
+        price: 1000,
+        image: "assets/Chess.jpg",
+        availableSeats: 18, // Seats available for enrollment
+        rating: 4,
+    },
+], 
+                cart: [],
+                showClass: true,
+                order: {
+                    firstName: "",
+                    lastName: "",
+                    address: "",
+                    city: "",
+                    state: "",
+                    zip: "",
+                    gift: false,
+                    method: "Home"
+                },
+                states: {
+                    AL: "Alabama",
+                    AR: "Arizona",
+                    CA: "California",
+                    NV: "Nevada"
+                }
+            },
+            methods: {
+                canAddToCart: function(classItem) {
+                    return this.availableSeats(classItem) > this.cart.filter(id => id === classItem.id).length;
+                },
+                addToCart: function(classItem) {
+                    this.cart.push(classItem.id);
+                },
+                showCheckout: function() {
+                    this.showClass = !this.showClass;
+                },
+                submitForm: function() {
+                    alert('Enrollment submitted!');
+                },
+                availableSeats: function(classItem) {
+                    return classItem.availableSeats - this.cart.filter(id => id === classItem.id).length;
+                }
+            },
+            computed: {
+                cartItemCount: function() {
+                    return this.cart.length || "";
+                },
+                sortedClasses() {
+                    let classesArray = this.products.slice(0);
+                    function compare(a, b) {
+                        if (a.price > b.price)
+                            return 1;
+                        if (a.price < b.price)
+                            return -1;
+                    }
+                    return classesArray.sort(compare);
+                },
             }
         });
     </script>
