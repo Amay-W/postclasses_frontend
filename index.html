@@ -13,6 +13,21 @@
     <div id="app">
         <header>
             <img id="logo" src="assets/POST2.png" alt="PostClasses Logo">
+            <div id="sort-section">
+                <label for="sort-dropdown">Sort by:</label>
+                <select v-model="sortAttribute" id="sort-dropdown" class="sort-dropdown">
+                    <option value="title">Subject</option>
+                    <option value="location">Location</option>
+                    <option value="availableSeats">Availability</option>
+                    <option value="price">Price</option>
+                </select>
+                <button v-if="!isAscending" @click="toggleSortOrder" class="sort-button">
+                    <i class="fas fa-sort-amount-down"></i> Descending
+                </button>
+                <button v-else @click="toggleSortOrder" class="sort-button">
+                    <i class="fas fa-sort-amount-up"></i> Ascending
+                </button>
+            </div>
             <button 
                 id="checkout_button" 
                 v-on:click="showCheckout" 
@@ -31,6 +46,7 @@
                     <section>
                         <h2 v-text="classItem.title"></h2>
                         <p v-html="classItem.description"></p>
+                        <p class="location">Location: {{ classItem.location }}</p>
                         <p class="price">Price: ${{ classItem.price }}</p>
                         <p v-if="availableStock(classItem) > 0">Seats available: {{ availableStock(classItem) }}</p>
                         <p v-else style="color: red;">Class Full</p>
@@ -55,6 +71,7 @@
                         <img v-bind:src="item.class.image" alt="Class Image" class="cart-image">
                         <div class="cart-details">
                             <h4 class="cart-title">{{ item.class.title }}</h4>
+                            <p class="cart-location">Location: {{ item.class.location }}</p>
                             <p class="cart-quantity">Quantity: {{ item.quantity }}</p>
                         </div>
                         <p class="cart-total">${{ item.class.price * item.quantity }}</p>
@@ -72,8 +89,7 @@
                         v-model.trim="order.fullName" 
                         type="text" 
                         placeholder="Enter full name" 
-                        :class="{'invalid': !isValidName && order.fullName !== ''}"
-                    >
+                        :class="{'invalid': !isValidName && order.fullName !== ''}">
                 </p>
                 <p>
                     <label>Phone Number:</label>
@@ -81,8 +97,7 @@
                         v-model.number="order.phoneNumber" 
                         type="number" 
                         placeholder="Enter phone number" 
-                        :class="{'invalid': !isValidPhoneNumber && order.phoneNumber !== null}"
-                    >
+                        :class="{'invalid': !isValidPhoneNumber && order.phoneNumber !== null}">
                 </p>
                 <div id="orderInfoDiv">
                     <h2>Order Preview</h2>
@@ -92,8 +107,7 @@
                         id="submitButton" 
                         v-on:click="submitForm" 
                         :disabled="!isFormValid" 
-                        :class="{ 'disabled': !isFormValid }"
-                    >
+                        :class="{ 'disabled': !isFormValid }">
                         Place Order
                     </button>
                 </div>
@@ -108,6 +122,8 @@
                 classes: classes,
                 cart: [],
                 showClass: true,
+                sortAttribute: "title", // Default sorting attribute
+                isAscending: true, // Default sorting order
                 order: {
                     fullName: "",
                     phoneNumber: null,
@@ -118,7 +134,13 @@
                     return this.cart.reduce((total, item) => total + item.quantity, 0);
                 },
                 sortedClasses() {
-                    return this.classes.sort((a, b) => a.price - b.price);
+                    let sorted = [...this.classes];
+                    sorted.sort((a, b) => {
+                        if (a[this.sortAttribute] < b[this.sortAttribute]) return this.isAscending ? -1 : 1;
+                        if (a[this.sortAttribute] > b[this.sortAttribute]) return this.isAscending ? 1 : -1;
+                        return 0;
+                    });
+                    return sorted;
                 },
                 totalPrice() {
                     return this.cart.reduce((total, item) => total + item.class.price * item.quantity, 0);
@@ -134,8 +156,8 @@
                 }
             },
             methods: {
-                canAddToCart(classItem) {
-                    return this.availableStock(classItem) > 0;
+                toggleSortOrder() {
+                    this.isAscending = !this.isAscending;
                 },
                 addToCart(classItem) {
                     const cartItem = this.cart.find(item => item.class.id === classItem.id);
@@ -148,7 +170,7 @@
                 removeFromCart(classItem) {
                     this.cart = this.cart.filter(item => item.class.id !== classItem.id);
                     if (this.cart.length === 0) {
-                        this.showClass = true; // Redirect to classes section if cart is empty
+                        this.showClass = true;
                     }
                 },
                 showCheckout() {
@@ -167,4 +189,3 @@
     </script>
 </body>
 </html>
-

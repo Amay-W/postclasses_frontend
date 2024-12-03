@@ -8,6 +8,7 @@ let classes = [
         image: "assets/Chess.jpg",
         availableSeats: 5, // Initial available seats
         rating: 4,
+        location: "Room 16", // Added location
     },
     
     {
@@ -18,8 +19,8 @@ let classes = [
         image: "assets/Poetry2.jpg",
         availableSeats: 5, // Initial available seats
         rating: 5,
+        location: "Room 22", // Added location
     },
-    
     
     {
         id: 1003,
@@ -29,8 +30,8 @@ let classes = [
         image: "assets/Pub1.jpg",
         availableSeats: 5, // Initial available seats
         rating: 4,
+        location: "Room 11", // Added location
     },
-    
     
     {
         id: 1004,
@@ -40,8 +41,8 @@ let classes = [
         image: "assets/Photo.png",
         availableSeats: 5, // Initial available seats
         rating: 4,
+        location: "Room 10", // Added location
     },
-    
     
     {
         id: 1005,
@@ -51,9 +52,8 @@ let classes = [
         image: "assets/Art.png",
         availableSeats: 5, // Initial available seats
         rating: 4,
+        location: "Room 15", // Added location
     },
-    
-    
     
     {
         id: 1006,
@@ -63,9 +63,8 @@ let classes = [
         image: "assets/MUN.png",
         availableSeats: 5, // Initial available seats
         rating: 4,
+        location: "Room 20", // Added location
     },
-    
-    
     
     {
         id: 1007,
@@ -75,6 +74,7 @@ let classes = [
         image: "assets/Music.jpg",
         availableSeats: 5, // Initial available seats
         rating: 4,
+        location: "Room 12", // Added location
     },
     
     {
@@ -85,6 +85,7 @@ let classes = [
         image: "assets/Cooking.jpg",
         availableSeats: 5, // Initial available seats
         rating: 5,
+        location: "Room 18", // Added location
     },
     
     {
@@ -95,6 +96,7 @@ let classes = [
         image: "assets/Yoga.jpg",
         availableSeats: 5, // Initial available seats
         rating: 4,
+        location: "Room 14", // Added location
     },
     
     {
@@ -105,6 +107,7 @@ let classes = [
         image: "assets/Coding.jpg",
         availableSeats: 5, // Initial available seats
         rating: 5,
+        location: "Room 9", // Added location
     },
-    
-    ];
+
+];
