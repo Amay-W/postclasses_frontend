@@ -45,7 +45,7 @@
                         <h2 v-text="classItem.title"></h2>
                         <p v-html="classItem.description"></p>
                         <p class="location">Location: {{ classItem.location }}</p>
-                        <p class="price">Price: ${{ classItem.price }}</p>
+                        <p class="price">Price: AED {{ classItem.price }}</p>
                         <p v-if="classItem.availableSeats > 0">Seats available: {{ classItem.availableSeats }}</p>
                         <p v-else style="color: red;">Class Full</p>
                         <div class="rating">
@@ -72,12 +72,12 @@
                             <p class="cart-location">Location: {{ item.class.location }}</p>
                             <p class="cart-quantity">Quantity: {{ item.quantity }}</p>
                         </div>
-                        <p class="cart-total">Total: ${{ item.class.price * item.quantity }}</p>
+                        <p class="cart-total">Total: AED {{ item.class.price * item.quantity }}</p>
                         <button class="remove-item-btn" v-on:click="removeFromCart(item.class)">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
-                    <p class="grand-total">Grand Total: <span>${{ totalPrice }}</span></p>
+                    <p class="grand-total">Grand Total: <span>AED {{ totalPrice }}</span></p>
                 </div>
                 <p>
                     <label>Full Name:</label>
@@ -214,12 +214,18 @@
                         this.showClass = true;
                     });
                 },
+
+
+
                 fetchProducts() {
                     fetch('https://postclasses-backend.onrender.com/collection/lessons')
                         .then(response => response.json())
                         .then(data => { this.classes = data; })
                         .catch(error => console.error("Error fetching products:", error));
                 },
+
+
+
                 fetchGetSearch() {
                     if (!this.query.trim()) {
                         this.fetchProducts();
@@ -230,6 +236,8 @@
                             .catch(error => console.error("Error fetching search results:", error));
                     }
                 },
+
+                
                 imageLink(image) {
                     return `https://postclasses-backend.onrender.com/${image}`;
                 }
