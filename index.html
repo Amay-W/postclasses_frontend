@@ -4,38 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PostClasses</title>
+    <!-- Link to external CSS for custom styles -->
     <link rel="stylesheet" href="styles/style.css">
+    <!-- Include Vue.js from a CDN for building a reactive UI -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <!-- Include Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 <body>
+    <!-- Vue application root -->
     <div id="app">
+        <!-- Header section -->
         <header>
+            <!-- Logo of the application -->
             <img id="logo" v-bind:src="imageLink('assets/POST2.png')" alt="PostClasses Logo">
-            <input v-on:input="fetchGetSearch" v-model.trim="query" type="text" name="search" placeholder="Search...">
+            <!-- Search bar with input binding and event listener -->
+            <input 
+                v-on:input="fetchGetSearch" 
+                v-model.trim="query" 
+                type="text" 
+                name="search" 
+                placeholder="Search...">
+            <!-- Sorting section -->
             <div id="sort-section">
                 <label for="sort-dropdown">Sort by:</label>
+                <!-- Dropdown for selecting sorting criteria -->
                 <select v-model="sortAttribute" id="sort-dropdown" class="sort-dropdown">
                     <option value="title">Subject</option>
                     <option value="location">Location</option>
                     <option value="availableSeats">Availability</option>
                     <option value="price">Price</option>
                 </select>
+                <!-- Button to toggle sort order -->
                 <button @click="toggleSortOrder" class="sort-button">
                     <i :class="isAscending ? 'fas fa-sort-amount-up' : 'fas fa-sort-amount-down'"></i>
                     {{ isAscending ? 'Ascending' : 'Descending' }}
                 </button>
             </div>
+            <!-- Checkout button with cart item count -->
             <button 
                 id="checkout_button" 
                 v-on:click="showCheckout" 
-                :disabled="cart.length === 0"
+                :disabled="cart.length === 0" 
                 class="checkout-button">
                 {{ cartItemCount || "0" }}
                 <i class="fas fa-cart-plus"></i> Checkout
             </button>
         </header>
+        <!-- Main content section -->
         <main>
+            <!-- Class listing section -->
             <div id="class-section" v-if="showClass">
                 <div v-for="classItem in sortedClasses" :key="classItem._id" class="class-box">
                     <figure>
@@ -61,6 +79,7 @@
                     </section>
                 </div>
             </div>
+            <!-- Checkout section -->
             <div v-else id="checkout-section">
                 <h2>Checkout</h2>
                 <div id="cart-summary">
@@ -111,26 +130,24 @@
         </main>
     </div>
     <script type="text/javascript">
+        // Create a new Vue instance
         new Vue({
-            el: "#app",
+            el: "#app", // Connect to the app's root element
             data: {
-                sitename: "PostClasses",
-                classes: [],
-                cart: [],
-                showClass: true,
-                sortAttribute: "title",
-                isAscending: true,
-                order: {
-                    fullName: "",
-                    phoneNumber: null,
-                },
-                query: ''
+                sitename: "PostClasses", // Application name
+                classes: [], // Stores the list of available classes
+                cart: [], // Holds the items added to the cart
+                showClass: true, // Toggles between class listing and checkout view
+                sortAttribute: "title", // Attribute to sort classes by
+                isAscending: true, // Determines sorting order
+                order: { fullName: "", phoneNumber: null }, // Order details
+                query: '' // Search query
             },
             computed: {
-                cartItemCount() {
+                cartItemCount() { // Calculate the total items in the cart
                     return this.cart.reduce((total, item) => total + item.quantity, 0);
                 },
-                sortedClasses() {
+                sortedClasses() { // Sort classes dynamically
                     return [...this.classes].sort((a, b) => {
                         let aVal = a[this.sortAttribute];
                         let bVal = b[this.sortAttribute];
@@ -139,24 +156,24 @@
                         return this.isAscending ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
                     });
                 },
-                totalPrice() {
+                totalPrice() { // Calculate the total price of the cart
                     return this.cart.reduce((total, item) => total + item.class.price * item.quantity, 0);
                 },
-                isValidName() {
+                isValidName() { // Validate the name field
                     return /^[a-zA-Z\s]+$/.test(this.order.fullName) && this.order.fullName.trim().length > 1;
                 },
-                isValidPhoneNumber() {
+                isValidPhoneNumber() { // Validate the phone number field
                     return /^\d{9,}$/.test(this.order.phoneNumber);
                 },
-                isFormValid() {
+                isFormValid() { // Check if the order form is valid
                     return this.isValidName && this.isValidPhoneNumber;
                 }
             },
             methods: {
-                toggleSortOrder() {
+                toggleSortOrder() { // Toggle between ascending and descending sort order
                     this.isAscending = !this.isAscending;
                 },
-                addToCart(classItem) {
+                addToCart(classItem) { // Add a class to the cart
                     const cartItem = this.cart.find(item => item.class._id === classItem._id);
                     if (cartItem) {
                         cartItem.quantity++;
@@ -165,20 +182,18 @@
                     }
                     classItem.availableSeats--;
                 },
-                removeFromCart(classItem) {
+                removeFromCart(classItem) { // Remove a class from the cart
                     const cartItemIndex = this.cart.findIndex(item => item.class._id === classItem._id);
                     if (cartItemIndex > -1) {
                         this.cart[cartItemIndex].class.availableSeats += this.cart[cartItemIndex].quantity;
                         this.cart.splice(cartItemIndex, 1);
                     }
-                    if (this.cart.length === 0) {
-                        this.showClass = true;
-                    }
+                    if (this.cart.length === 0) this.showClass = true;
                 },
-                showCheckout() {
+                showCheckout() { // Toggle between checkout and class listing views
                     this.showClass = !this.showClass;
                 },
-                submitForm() {
+                submitForm() { // Submit the order form
                     const payload = {
                         ...this.order,
                         items: this.cart.map(item => ({
@@ -200,7 +215,7 @@
                         })
                         .catch(error => console.error("Error submitting order:", error));
                 },
-                fetchPutUpdate() {
+                fetchPutUpdate() { // Update available seats after placing an order
                     const promises = this.cart.map(item => {
                         const updatedSeats = { availableSeats: item.class.availableSeats };
                         return fetch(`https://postclasses-backend.onrender.com/collection/lessons/${item.class._id}`, {
@@ -214,19 +229,13 @@
                         this.showClass = true;
                     });
                 },
-
-
-
-                fetchProducts() {
+                fetchProducts() { // Fetch the list of classes
                     fetch('https://postclasses-backend.onrender.com/collection/lessons')
                         .then(response => response.json())
                         .then(data => { this.classes = data; })
                         .catch(error => console.error("Error fetching products:", error));
                 },
-
-
-
-                fetchGetSearch() {
+                fetchGetSearch() { // Fetch search results
                     if (!this.query.trim()) {
                         this.fetchProducts();
                     } else {
@@ -236,13 +245,11 @@
                             .catch(error => console.error("Error fetching search results:", error));
                     }
                 },
-
-                
-                imageLink(image) {
+                imageLink(image) { // Generate the image URL
                     return `https://postclasses-backend.onrender.com/${image}`;
                 }
             },
-            created() {
+            created() { // Fetch the list of classes on component creation
                 this.fetchProducts();
             }
         });
