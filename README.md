@@ -20,8 +20,13 @@ Below is a video demonstrating all features of the PostClasses website, from bro
 
 <video width="100%" height="auto" controls>
   <source src="readmeAssets/demo_video.mp4" type="video/mp4">
-  
 </video>
+
+
+
+https://github.com/user-attachments/assets/60e3133c-ef1b-4679-96b9-3654e3468e80
+
+
 
 ---
 
