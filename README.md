@@ -1,16 +1,16 @@
-# 🎓 PostClasses Website
+# 🎓 PostClasses Website - Amay W
 
-Welcome to **PostClasses**, a simple and minimal after-classes management website! This project allows users to explore various after-school activities like Chess, Public Speaking, Cooking, and more. Users can **add classes to their cart**, proceed to checkout, and submit their details, which are seamlessly stored in **MongoDB** using **Render** as the web service.
+Welcome to **PostClasses**, a simple and minimal after-classes management website! This project allows users to explore various after-school activities like Chess, Public Speaking, Cooking, and more. Users can **add classes to their cart**, **proceed to checkout**, and **submit their details**, which are seamlessly stored in **MongoDB** using **Render** as the web service.
 
 ---
 
 ## 📌 Links to Project Resources
 
-- **GitHub Pages Link:**: [PostClasses Frontend](https://amay-w.github.io/postclasses_frontend/)
-- **GitHub Repo (Frontend):**: [Frontend Repository](https://github.com/Amay-W/postclasses_frontend)
-- **GitHub Repo (Backend):**: [Backend Repository](https://github.com/Amay-W/postclasses_backend)
-- **Live Render Deployment for Subjects:**: [PostClasses on Render](https://postclasses-backend.onrender.com/collection/lessons)
-- **Live Render Deployment for Orders:**: [PostClasses on Render](https://postclasses-backend.onrender.com/collection/orders)
+- **GitHub Pages Link**: [Click me to watch live👆](https://amay-w.github.io/postclasses_frontend/)
+- **GitHub Repo (Frontend)**: [Frontend Repository](https://github.com/Amay-W/postclasses_frontend)
+- **GitHub Repo (Backend)**: [Backend Repository](https://github.com/Amay-W/postclasses_backend)
+- **Live Render Deployment for Subjects**: [All Lessons](https://postclasses-backend.onrender.com/collection/lessons)
+- **Live Render Deployment for Orders** [All Orders](https://postclasses-backend.onrender.com/collection/orders)
 
 ---
 
@@ -43,6 +43,9 @@ The **PostClasses** website is built with:
      - Seats available  
      - Ratings  
 
+   ****:  
+   ![One Class](readmeAssets/OneClass.png)
+
 2. **Search and Filter**:
    - **Search** by:
      - Title  
@@ -54,7 +57,7 @@ The **PostClasses** website is built with:
      - Availability  
      - Price  
 
-   **Image**:  
+   ****:  
    ![Search and Filter](readmeAssets/searchAndfilter.png)
 
 3. **Add to Cart**:
@@ -87,7 +90,7 @@ The frontend repo includes:
 ### Backend
 
 The backend repo contains:
-- `server.js`: Handles API routes for GET, POST, PUT, and DELETE operations.
+- `server.js`: Handles API routes for GET, POST, PUT, and Search operations.
 - `package.json`: Project dependencies.
 
 ---
@@ -110,7 +113,7 @@ The backend exposes the following RESTful APIs:
 
 4. **SEARCH LESSONS** `search/lessons?q=Poetry`  
    Search a lesson by query.  
-   ![DELETE Request](readmeAssets/postman_search.png)
+   ![Search Request](readmeAssets/postman_search.png)
 
 ---
 
@@ -143,13 +146,16 @@ Data is stored in the following collections:
    }
 
 - **MongoDB Screenshorts**:  
+   **Lessons**: 
    ![Lessons](readmeAssets/lessons.png)
+   **Orders**: 
    ![Orders](readmeAssets/orders.png)
 
 ---
 
 ## 🌐 Render Deployment
 The backend is deployed using Render. Here’s a snapshot of the live deployment configuration:
+   **Reder:**: 
    ![Render](readmeAssets/render.png)
 
 ---
