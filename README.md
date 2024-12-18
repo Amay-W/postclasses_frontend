@@ -20,7 +20,7 @@ Below is a video demonstrating all features of the PostClasses website, from bro
 
 <video width="100%" height="auto" controls>
   <source src="readmeAssets/demo_video.mp4" type="video/mp4">
-  Your browser does not support the video tag.
+  
 </video>
 
 ---
@@ -44,7 +44,7 @@ The **PostClasses** website is built with:
      - Ratings  
 
    ****:  
-   ![One Class](readmeAssets/OneClass.png)
+   <img src="readmeAssets/OneClass.png" alt="One Class" width="400px">
 
 2. **Search and Filter**:
    - **Search** by:
@@ -71,7 +71,7 @@ The **PostClasses** website is built with:
      - **Submit** their order by entering their **name** and **phone number**.  
 
    **Image**:  
-   ![Checkout Page](readmeAssets/checkout_page.png)
+   <img src="readmeAssets/checkout_page.png" alt="Checkout Page" width="500px">
 
 5. **Data Storage**:
    - Upon submission, order details are sent to the backend and stored in MongoDB.
@@ -112,7 +112,7 @@ The backend exposes the following RESTful APIs:
    ![PUT Request](readmeAssets/postman_put.png)
 
 4. **SEARCH LESSONS** `search/lessons?q=Poetry`  
-   Search a lesson by query.  
+   Search a lesson, desciption, location by query.  
    ![Search Request](readmeAssets/postman_search.png)
 
 ---
@@ -145,7 +145,7 @@ Data is stored in the following collections:
     "total": 6000
    }
 
-- **MongoDB Screenshorts**:  
+- **MongoDB Screenshots**:  
    **Lessons**: 
    ![Lessons](readmeAssets/lessons.png)
    **Orders**: 
@@ -155,7 +155,7 @@ Data is stored in the following collections:
 
 ## 🌐 Render Deployment
 The backend is deployed using Render. Here’s a snapshot of the live deployment configuration:
-   **Reder:**: 
+   ****: 
    ![Render](readmeAssets/render.png)
 
 ---
