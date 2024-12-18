@@ -69,8 +69,7 @@ The **PostClasses** website is built with:
    - At the checkout page, users can:
      - **Remove items** from the cart  
      - **Submit** their order by entering their **name** and **phone number**.  
-
-   **Image**:  
+  
    <img src="readmeAssets/checkout_page.png" alt="Checkout Page" width="500px">
 
 5. **Data Storage**:
@@ -155,7 +154,7 @@ Data is stored in the following collections:
 
 ## 🌐 Render Deployment
 The backend is deployed using Render. Here’s a snapshot of the live deployment configuration:
-   ****: 
+   
    ![Render](readmeAssets/render.png)
 
 ---
