@@ -24,7 +24,9 @@ Below is a video demonstrating all features of the PostClasses website, from bro
 
 
 
-https://github.com/user-attachments/assets/60e3133c-ef1b-4679-96b9-3654e3468e80
+https://github.com/user-attachments/assets/edec4643-1577-4ec3-9db7-37c27beac5d8
+
+
 
 
 
