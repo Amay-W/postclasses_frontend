@@ -43,7 +43,7 @@ The **PostClasses** website is built with:
      - Seats available  
      - Ratings  
 
-   ****:  
+   
    <img src="readmeAssets/OneClass.png" alt="One Class" width="400px">
 
 2. **Search and Filter**:
@@ -62,7 +62,7 @@ The **PostClasses** website is built with:
 
 3. **Add to Cart**:
    - Users can select multiple classes and add them to their cart.  
-   **Image**:  
+     
    ![Add to Cart](readmeAssets/add_to_cart.png)
 
 4. **Checkout**:
