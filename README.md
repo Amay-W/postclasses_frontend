@@ -57,7 +57,7 @@ The **PostClasses** website is built with:
      - Availability  
      - Price  
 
-   ****:  
+    
    ![Search and Filter](readmeAssets/searchAndfilter.png)
 
 3. **Add to Cart**:
